@@ -19,7 +19,9 @@ var authOptions = {
     'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
   },
   form: {
+    scope: 'user-read-recently-played',
     grant_type: 'client_credentials'
+    
   },
   json: true
 };

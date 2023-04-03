@@ -46,10 +46,11 @@ app.get('/login', function(req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email';
+  var scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state user-read-recently-played user-top-read user-read-recently-played playlist-read-private';
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
+      grant_type: 'authorization_code',
       client_id: client_id,
       scope: scope,
       redirect_uri: redirect_uri,
@@ -78,7 +79,8 @@ app.get('/callback', function(req, res) {
       form: {
         code: code,
         redirect_uri: redirect_uri,
-        grant_type: 'authorization_code'
+        grant_type: 'authorization_code',
+        scope: 'user-read-recently-played playlist-read-private'
       },
       headers: {
         'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
@@ -127,7 +129,7 @@ app.get('/refresh_token', function(req, res) {
     url: 'https://accounts.spotify.com/api/token',
     headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
     form: {
-      grant_type: 'refresh_token',
+      grant_type: 'authorization_code',
       refresh_token: refresh_token
     },
     json: true
