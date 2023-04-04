@@ -8,6 +8,7 @@
     "cors": "^2.8.4",
     "express": "^4.16.4",
     "querystring": "~0.2.0",
-    "request": "~2.83.0"
+    "request": "~2.83.0",
+    "request-promise-native": "^1.0.9"
   }
 }
