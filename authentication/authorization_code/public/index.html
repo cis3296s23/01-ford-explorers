@@ -37,7 +37,8 @@
         <h2>Daily Mixes:</h2>
       </div>
       <div id="track">
-    <h2>Tracks in Mix</h2></div>
+        <h2>Tracks in Mix</h2>
+      </div>
     </div>
 
   </div>
@@ -99,6 +100,7 @@
         error = params.error;
 
       var playlistMap = new Map();
+      var userId;
 
       if (error) {
         alert('There was an error during the authentication');
@@ -113,7 +115,53 @@
               'Authorization': 'Bearer ' + access_token
             },
             success: function (response) {
+              userId = response.id;
               userProfilePlaceholder.innerHTML = userProfileTemplate(response);
+
+              $.ajax({
+                method: 'POST',
+                url: 'https://api.spotify.com/v1/users/' + userId + '/playlists',
+                headers: {
+                  'Authorization': 'Bearer ' + access_token,
+                  'Content-Type': 'application/json'
+                },
+                data: JSON.stringify({
+                  'name': 'My Awesome Playlist',
+                  'public': false,
+                  'collaborative': false,
+                  'description': 'A playlist of my favorite songs'
+                }),
+                success: function (response) {
+                  console.log('New playlist created with ID:', response.id);
+                  var playlistId = response.id;
+                  // AJAX call to add tracks to the playlist
+                  $.ajax({
+                    method: 'POST',
+                    url: 'https://api.spotify.com/v1/playlists/' + playlistId + '/tracks',
+                    headers: {
+                      'Authorization': 'Bearer ' + access_token,
+                      'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify({
+                      uris: [
+                        'spotify:track:2dHHgzDwk4BJdRwy9uXhTO'
+                      ]
+                    }),
+                    success: function (response) {
+                      console.log('Tracks added to the playlist successfully');
+                    },
+                    error: function (error) {
+                      console.log('Error adding tracks to the playlist:', error);
+                    }
+                  });
+                },
+                error: function (error) {
+                  console.log('Error creating playlist:', error);
+                }
+              });
+
+
+
 
 
               // fetch recently played tracks
@@ -191,19 +239,19 @@
             console.log(playlistId);
 
             $.ajax({
-              url: "https://api.spotify.com/v1/playlists/" + playlistId + "/tracks", 
+              url: "https://api.spotify.com/v1/playlists/" + playlistId + "/tracks",
               headers: {
                 "Authorization": "Bearer " + access_token
               },
               success: function (response) {
                 var trackContent = "<h2>Tracks in Mix:</h2><ul>";
-                console.log("Tracks for playlist " + playlistId + ":"); 
+                console.log("Tracks for playlist " + playlistId + ":");
                 response.items.forEach(function (item) {
                   console.log(item.track.name + " by " + item.track.artists[0].name);
-                  trackContent+="<li>"+item.track.name + " by " + item.track.artists[0].name+"</li>";
+                  trackContent += "<li>" + item.track.name + " by " + item.track.artists[0].name + "</li>";
                 });
-                trackContent+="</ul>";
-                track.innerHTML=trackContent;
+                trackContent += "</ul>";
+                track.innerHTML = trackContent;
 
                 //later remove tracks that have a item.track.artist that appears on the artistsMap
 
@@ -217,6 +265,8 @@
             console.log("Error: " + error);
           }
         });
+
+
 
       }
     })();
