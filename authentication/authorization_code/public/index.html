@@ -38,6 +38,11 @@
       <div id="track">
         <h2>Tracks in Mix</h2>
       </div>
+      <div id="playlist-form">
+        <h2>Create or update playlist:</h2>
+        <input type="text" id="playlist-name" placeholder="Enter playlist name" style="color: black; font-size: 16px;">
+        <button id="createPlaylist" class="btn btn-primary">Create or Update Playlist</button>
+      </div>
     </div>
   </div>
 
@@ -116,47 +121,96 @@
               userId = response.id;
               userProfilePlaceholder.innerHTML = userProfileTemplate(response);
 
-              $.ajax({
-                method: 'POST',
-                url: 'https://api.spotify.com/v1/users/' + userId + '/playlists',
-                headers: {
-                  'Authorization': 'Bearer ' + access_token,
-                  'Content-Type': 'application/json'
-                },
-                data: JSON.stringify({
-                  'name': 'My Awesome Playlist',
-                  'public': false,
-                  'collaborative': false,
-                  'description': 'A playlist of my favorite songs'
-                }),
-                success: function (response) {
-                  console.log('New playlist created with ID:', response.id);
-                  var playlistId = response.id;
-                  // AJAX call to add tracks to the playlist
-                  $.ajax({
-                    method: 'POST',
-                    url: 'https://api.spotify.com/v1/playlists/' + playlistId + '/tracks',
-                    headers: {
-                      'Authorization': 'Bearer ' + access_token,
-                      'Content-Type': 'application/json'
-                    },
-                    data: JSON.stringify({
-                      uris: [
-                        'spotify:track:2dHHgzDwk4BJdRwy9uXhTO'
-                      ]
-                    }),
-                    success: function (response) {
-                      console.log('Tracks added to the playlist successfully');
-                    },
-                    error: function (error) {
-                      console.log('Error adding tracks to the playlist:', error);
+              function addTracksToPlaylist(playlistId) {
+                // Add your logic to add tracks to the playlist here
+                var trackURI =  'spotify:track:2dHHgzDwk4BJdRwy9uXhTO';
+
+                // AJAX call to add the hardcoded track to the playlist
+                $.ajax({
+                  method: 'POST',
+                  url: 'https://api.spotify.com/v1/playlists/' + playlistId + '/tracks',
+                  headers: {
+                    'Authorization': 'Bearer ' + access_token,
+                    'Content-Type': 'application/json'
+                  },
+                  data: JSON.stringify({
+                    uris: [trackURI]
+                  }),
+                  success: function (response) {
+                    console.log('Track added to the playlist successfully');
+                  },
+                  error: function (error) {
+                    console.log('Error adding track to the playlist:', error);
+                  }
+                });
+              }
+
+              function createOrUpdatePlaylist(name) {
+                // Retrieve the user's playlists
+                $.ajax({
+                  url: 'https://api.spotify.com/v1/me/playlists',
+                  headers: {
+                    'Authorization': 'Bearer ' + access_token
+                  },
+                  success: function (response) {
+                    // Check if the specified playlist already exists
+                    var existingPlaylist = response.items.find(function (playlist) {
+                      return playlist.name === name;
+                    });
+
+                    // If the playlist exists, add tracks to it
+                    if (existingPlaylist) {
+                      console.log('Playlist already exists with ID:', existingPlaylist.id);
+                      addTracksToPlaylist(existingPlaylist.id);
+                    } else {
+                      // If the playlist doesn't exist, create a new playlist and add tracks
+                      $.ajax({
+                        method: 'POST',
+                        url: 'https://api.spotify.com/v1/users/' + userId + '/playlists',
+                        headers: {
+                          'Authorization': 'Bearer ' + access_token,
+                          'Content-Type': 'application/json'
+                        },
+                        data: JSON.stringify({
+                          'name': name,
+                          'public': false,
+                          'collaborative': false,
+                          'description': 'A playlist of my favorite songs'
+                        }),
+                        success: function (response) {
+                          console.log('New playlist created with ID:', response.id);
+                          var playlistId = response.id;
+                          addTracksToPlaylist(playlistId);
+                        },
+                        error: function (error) {
+                          console.log('Error creating playlist:', error);
+                        }
+                      });
                     }
-                  });
-                },
-                error: function (error) {
-                  console.log('Error creating playlist:', error);
+                  },
+                  error: function (error) {
+                    console.log('Error retrieving playlists:', error);
+                  }
+                });
+              }
+
+              // Handle the createOrUpdatePlaylist button click
+              $('#createPlaylist').on('click', function () {
+                var playlistName = $('#playlist-name').val();
+
+                if (playlistName) {
+                  createOrUpdatePlaylist(playlistName);
+                } else {
+                  alert("Please enter a playlist name.");
                 }
               });
+
+
+
+
+
+
+
 
 
 
