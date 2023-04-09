@@ -29,15 +29,14 @@
     <div id="loggedin">
       <div id="user-profile">
       </div>
+      <div id="suggestions">
+        <h2>Suggested Tracks</h2>
+      </div>
       <div id="artists">
         <h2>Recent Artists</h2>
       </div>
-      <div id="mix">
-        <h2>Daily Mixes:</h2>
-      </div>
-      <div id="track">
-        <h2>Tracks in Mix</h2>
-      </div>
+
+
       <div id="playlist-form">
         <h2>Create or update playlist:</h2>
         <input type="text" id="playlist-name" placeholder="Enter playlist name" style="color: black; font-size: 16px;">
@@ -105,6 +104,8 @@
       var playlistMap = new Map();
       var userId;
 
+      var artistsList = [];
+
       if (error) {
         alert('There was an error during the authentication');
       } else {
@@ -123,7 +124,7 @@
 
               function addTracksToPlaylist(playlistId) {
                 // Add your logic to add tracks to the playlist here
-                var trackURI =  'spotify:track:2dHHgzDwk4BJdRwy9uXhTO';
+                var trackURI = 'spotify:track:2dHHgzDwk4BJdRwy9uXhTO';
 
                 // AJAX call to add the hardcoded track to the playlist
                 $.ajax({
@@ -206,19 +207,6 @@
               });
 
 
-
-
-
-
-
-
-
-
-
-
-              // fetch recently played tracks
-
-
               $('#login').hide();
               $('#loggedin').show();
             }
@@ -233,6 +221,7 @@
         }
 
 
+
         $.ajax({
           url: "https://api.spotify.com/v1/me/player/recently-played",
           headers: {
@@ -240,88 +229,153 @@
           },
           success: function (response) {
             console.log("Recently Played Tracks:");
-            var artistsMap = new Map(); // create a new map to store the artists
+            // create a new array to store the artists
             response.items.forEach(function (item) {
               var artistName = item.track.artists[0].name;
-              artistsMap.set(artistName, true); // add the artist to the map, temporarily set value to true
+              if (!artistsList.includes(artistName)) { // add the artist to the array only if it doesn't already exist
+                artistsList.push(artistName);
+              }
             });
-            console.log(artistsMap); // print the map to the console
-            // display the map on the page
+            console.log(artistsList); // print the array to the console
+            // display the array on the page
             var artists = document.getElementById("artists");
             var artistsContent = "<h2>Recently Played Artists:</h2><ul>";
-            artistsMap.forEach(function (value, artistName) {
+            artistsList.forEach(function (artistName) {
               artistsContent += "<li>" + artistName + "</li>"; // add each artist to the Content
             });
             artistsContent += "</ul>";
+            console.log(artistsContent);
             artists.innerHTML = artistsContent;
+            return artistsContent;
           },
           error: function (xhr, status, error) {
             console.log("Error: " + error);
           }
         });
+      }
 
-        $.ajax({
-          url: "https://api.spotify.com/v1/me/playlists",
-          headers: {
-            "Authorization": "Bearer " + access_token
-          },
-          success: function (response) {
-            console.log("User Playlists:");
-            var dailyMixes = response.items.filter(function (item) {
-              return item.name.includes("Daily Mix"); // filter for playlists with "Daily Mix" in the name
-            });
-            console.log(dailyMixes); // print the daily mixes to the console
-            // create a new map to store the playlist names
 
-            dailyMixes.forEach(function (item) {
-              playlistMap.set(item.name, item.id);
-            });
-            console.log(playlistMap); // print the playlist map to the console
-            // display the daily mixes on the page
-            var mixContent = "<h2>Daily Mixes:</h2><ul>";
-            dailyMixes.forEach(function (item) {
-              mixContent += "<li>" + item.name + "</li>"; // add each daily mix to the HTML
-            });
-            mixContent += "</ul>";
-            mix.innerHTML = mixContent;
-
-            //termporarily hardcoded to grab Daily Mix tracklist
-            //should loop through the playlistMap to make ajax calls for each playlist; needs to be added
-            var playlistId = playlistMap.get("Daily Mix");
-            console.log(playlistId);
-
+      //Vestigile code from testing, may be useful later please do not delete.
+      /*
             $.ajax({
-              url: "https://api.spotify.com/v1/playlists/" + playlistId + "/tracks",
+              url: "https://api.spotify.com/v1/me/playlists",
               headers: {
                 "Authorization": "Bearer " + access_token
               },
               success: function (response) {
-                var trackContent = "<h2>Tracks in Mix:</h2><ul>";
-                console.log("Tracks for playlist " + playlistId + ":");
-                response.items.forEach(function (item) {
-                  console.log(item.track.name + " by " + item.track.artists[0].name);
-                  trackContent += "<li>" + item.track.name + " by " + item.track.artists[0].name + "</li>";
+                console.log("User Playlists:");
+                var playlists = response.items.filter(function (item) {
+                  return item.name;
                 });
-                trackContent += "</ul>";
-                track.innerHTML = trackContent;
-
-                //later remove tracks that have a item.track.artist that appears on the artistsMap
-
+      
+                var playlistMap = new Map();
+      
+                playlists.forEach(function (item) {
+                  playlistMap.set(item.name, item.id);
+                });
+      
+                console.log(playlistMap);
+      
+                var tracksContent = "<h2>Tracks:</h2>";
+      
+                playlistMap.forEach(function (playlistId, playlistName) {
+                  $.ajax({
+                    url: "https://api.spotify.com/v1/playlists/" + playlistId + "/tracks",
+                    headers: {
+                      "Authorization": "Bearer " + access_token
+                    },
+                    success: function (response) {
+                      console.log("Tracks for playlist " + playlistName + ":");
+                      tracksContent += "<h3>" + playlistName + "</h3><ul>";
+                      response.items.forEach(function (item) {
+                        console.log(item.track.name + " by " + item.track.artists[0].name);
+                        tracksContent += "<li>" + item.track.name + " by " + item.track.artists[0].name + "</li>";
+                      });
+                      tracksContent += "</ul>";
+                      track.innerHTML = tracksContent;
+                    },
+                    error: function (xhr, status, error) {
+                      console.log("Error: " + error);
+                    }
+                  });
+                });
               },
               error: function (xhr, status, error) {
                 console.log("Error: " + error);
               }
             });
-          },
-          error: function (xhr, status, error) {
-            console.log("Error: " + error);
-          }
-        });
+            */
+
+      $.ajax({
+        url: "https://api.spotify.com/v1/me/player/recently-played",
+        headers: {
+          "Authorization": "Bearer " + access_token
+        },
+        data: {
+          limit: 50 // Get the 50 most recently played tracks
+        },
+        success: function (response) {
+          // Choose a random track from the recently played list
+          const track = response.items[Math.floor(Math.random() * response.items.length)].track;
+
+          // Use the chosen track as the seed for getting a track suggestion
+          $.ajax({
+            url: "https://api.spotify.com/v1/recommendations",
+            headers: {
+              "Authorization": "Bearer " + access_token
+            },
+            data: {
+              limit: 20,
+              seed_tracks: track.id // Use the ID of the chosen track as the seed
+            },
+            success: function (response) {
+              console.log(response);
+              let i=0;
+              var tracklist=response;
+              do{
+              //get reccomendation
+              var track = tracklist.tracks[i];
+
+              // check if the artist is in the recently played list
+              var artistName = track.artists[0].name;
+              var artistInRecentPlays = artistsList.includes(artistName);
+              
+              if(artistInRecentPlays){
+                console.log("Track: "+track.name+" not displayed "+artistName+" appears in listened list." );
+                i++;
+                //iterate if track appears
+              }
+
+              // only show if artist not in recently listened
+              else{
+                // build the preview
+                var trackName = track.name;
+                var albumName = track.album.name;
+                var previewUrl = track.preview_url;
+                var trackUrl = track.external_urls.spotify;
+                var imageUrl = track.album.images[0].url;
+                var previewHtml = "<h2>Your Suggestion:</h2><img src='" + imageUrl + "' style='max-width: 150px; max-height: 150px;'><p><a href='" + trackUrl + "'>" + trackName + " by " + artistName + "</a></p><p>From the album: " + albumName + "</p><audio src='" + previewUrl + "' controls></audio>";
+                console.log(i);
+                // display the recommendation
+                suggestions.innerHTML = previewHtml;
+              }
+
+            } while(artistInRecentPlays);
+            },
+            error: function (xhr, status, error) {
+              console.log(`Error: ${error}`);
+            }
+          });
+        },
+        error: function (xhr, status, error) {
+          console.log(`Error: ${error}`);
+        }
+      });
 
 
 
-      }
-    })();
+    }
+    )();
 
   </script>
 </body>
