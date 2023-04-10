@@ -27,26 +27,31 @@
       <a href="/login" class="btn btn-primary">Log in with Spotify</a>
     </div>
     <div id="loggedin">
-      <div id="user-profile">
+      <div class="left">
+        <div id="user-profile">
+        </div>
       </div>
-      <div id="artists">
-        <h2>Recent Artists</h2>
+      <div class="right">
+        <div id="artists">
+          <h2>Recent Artists</h2>
+        </div>
+        <div id="mix">
+          <h2>Daily Mixes:</h2>
+        </div>
+        <div id="track">
+          <h2>Tracks in Mix</h2>
+        </div>
       </div>
-      <div id="mix">
-        <h2>Daily Mixes:</h2>
-      </div>
-      <div id="track">
-        <h2>Tracks in Mix</h2>
-      </div>
+      
     </div>
   </div>
 
   <script id="user-profile-template" type="text/x-handlebars-template">
-      <h1>Logged in as {{display_name}}</h1>
+      <h1 style="text-align: center;">Logged in as {{display_name}}</h1>
       <div class="media">
-        <div class="pull-left">
-          <img class="media-object" width="150" src="{{images.0.url}}" />
-        </div>
+        <!-- <div class="pull-left"> -->
+          <img class="media-object"  src="{{images.0.url}}" />
+        <!-- </div> -->
         <div class="media-body">
           <dl class="dl-horizontal">
             <dt>Display name</dt><dd class="clearfix">{{display_name}}</dd>

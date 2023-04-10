@@ -2,18 +2,34 @@
     box-sizing: border-box;
 }
 
-body { 
-    margin:0;                   /* no white border around browser window */
+body {                    /* no white border around browser window */
     font-family: 'Gotham Circular', sans-serif;    /* no tails on the font like Times New Roman */
     background-color: #08A4C7;  /* background color of the page */
     color: white; /* text will be white */
-    font-size: 1rem;
+    font-size: 1.5rem;
 }
 
-div {
-    margin: 1rem auto;
+img {
+    margin: auto;
+    size: 3rem;
+}
+
+.left {
+    float: left;
+    width: 40%;
+    position: fixed;
+    height: 100%;
+    left: 0rem;
+    top: 0rem;
     background-color: #0ACEFA;
-    width: 80%;
     padding: 1rem;
-    border:#05657A;
+}
+
+.right {
+    float: right;
+    width: 60%;
+    position: fixed;
+    right: 0rem;
+    top: 0rem;
+    padding: 1rem;
 }
