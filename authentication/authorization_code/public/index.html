@@ -23,7 +23,7 @@
 <body>
   <div class="container">
     <div id="login">
-      <h1>This is an example of the Authorization Code flow</h1>
+      <h1>Welcome to Explorify!</h1>
       <a href="/login" class="btn btn-primary">Log in with Spotify</a>
     </div>
     <div id="loggedin">
@@ -33,7 +33,7 @@
         <h2>Suggested Tracks</h2>
       </div>
       <div id="artists">
-        <h2>Recent Artists</h2>
+        <h2>Recent Songs</h2>
       </div>
 
 
@@ -46,7 +46,7 @@
   </div>
 
   <script id="user-profile-template" type="text/x-handlebars-template">
-    <div class="user-profile">
+
       <h1>Logged in as {{display_name}}</h1>
       <div class="media">
         <div class="pull-left">
@@ -64,7 +64,7 @@
           </dl>
         </div>
       </div>
-    </div>
+    
   </script>
 
 
@@ -231,32 +231,43 @@
           },
           success: function (response) {
             console.log("Recently Played Tracks:");
-            // create a new array to store the artists
+            var tracksAndArtistsList = [];
+
             response.items.forEach(function (item) {
+              var trackName = item.track.name;
               var artistName = item.track.artists[0].name;
-              if (!artistsList.includes(artistName)) { // add the artist to the array only if it doesn't already exist
+              var trackAndArtist = trackName + " by " + artistName;
+
+              if (!tracksAndArtistsList.includes(trackAndArtist)) {
+                tracksAndArtistsList.push(trackAndArtist);
+              }
+
+              if (!artistsList.includes(artistName)) {
                 artistsList.push(artistName);
               }
             });
-            console.log(artistsList); // print the array to the console
 
-            localStorage.setItem("recentlyPlayedArtist", JSON.stringify(artistsList));
+            console.log(tracksAndArtistsList);
 
-            // display the array on the page
-            var artists = document.getElementById("artists");
-            var artistsContent = "<h2>Recently Played Artists:</h2><ul>";
-            artistsList.forEach(function (artistName) {
-              artistsContent += "<li>" + artistName + "</li>"; // add each artist to the Content
+            localStorage.setItem("recentlyPlayedArtists", JSON.stringify(artistsList));
+
+            var tracksAndArtists = document.getElementById("artists");
+            var content = "<h2>Recently Played Tracks and Artists:</h2>";
+
+            tracksAndArtistsList.forEach(function (trackAndArtist) {
+              content += "<li>" + trackAndArtist + "</li>";
             });
-            artistsContent += "</ul>";
-            console.log(artistsContent);
-            artists.innerHTML = artistsContent;
-            return artistsContent;
+
+            content += "</ul>";
+            console.log(content);
+            tracksAndArtists.innerHTML = content;
+            return content;
           },
           error: function (xhr, status, error) {
             console.log("Error: " + error);
           }
         });
+
       }
 
 

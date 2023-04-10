@@ -1,56 +1,63 @@
-* { 
-    box-sizing: border-box;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-body { 
-    margin:0;                   /* no white border around browser window */
-    font-family: 'Gotham Circular', sans-serif;    /* no tails on the font like Times New Roman */
-    background-color: #08A4C7;  /* background color of the page */
-    color: white; /* text will be white */
-    font-size: 1rem;
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #1d1d1d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: #ffffff;
 }
 
-div {
-    margin: 1rem auto;
-    background-color: #0ACEFA;
-    width: 80%;
-    padding: 1rem;
-    border:#05657A;
+.container {
+  text-align: center;
 }
 
-/* Styling the input field */
+.title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.input-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 #playlist-name {
-    background-color: #E5E5EA;
-    border: none;
-    border-radius: 6px;
-    color: #1C1C1E;
-    font-size: 16px;
-    font-weight: bold;
-    height: 40px;
-    padding: 8px;
-    width: 300px;
-  }
-  
-  /* Styling the button */
-  #createPlaylist {
-    background-color: #1C1C1E;
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    height: 40px;
-    margin-left: 12px;
-    padding: 8px;
-    text-align: center;
-    text-decoration: none;
-  }
-  
-  /* Styling the button when hovered */
-  #createPlaylist:hover {
-    background-color: #141417;
-    cursor: pointer;
-  }
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  outline: none;
+  width: 300px;
+}
+
+.btn {
+  cursor: pointer;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #1db954;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #148f3c;
+}
+
 
   
 
