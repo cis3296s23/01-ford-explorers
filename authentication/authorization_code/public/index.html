@@ -241,7 +241,7 @@
             console.log(artistsList); // print the array to the console
 
             localStorage.setItem("recentlyPlayedArtist",JSON.stringify(artistsList));
-            
+
             // display the array on the page
             var artists = document.getElementById("artists");
             var artistsContent = "<h2>Recently Played Artists:</h2><ul>";
@@ -337,13 +337,15 @@
               console.log(response);
               let i=0;
               var tracklist=response;
+
+              var storeArtistList = JSON.parse(localStorage.getItem("recentlyPlayedArtist"));
               do{
               //get reccomendation
               var track = tracklist.tracks[i];
 
               // check if the artist is in the recently played list
               var artistName = track.artists[0].name;
-              var artistInRecentPlays = artistsList.includes(artistName);
+              var artistInRecentPlays = storeArtistList.includes(artistName);
               
               if(artistInRecentPlays){
                 console.log("Track: "+track.name+" not displayed "+artistName+" appears in listened list." );
