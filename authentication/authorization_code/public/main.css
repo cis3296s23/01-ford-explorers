@@ -4,58 +4,41 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #1d1d1d;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  color: #ffffff;
+body {                    /* no white border around browser window */
+    font-family: 'Gotham Circular', sans-serif;    /* no tails on the font like Times New Roman */
+    background-color: #05657A;  /* background color of the page */
+    color: white; /* text will be white */
+    font-size: 1.5rem;
 }
 
-.container {
-  text-align: center;
+img {
+    margin: auto;
+    size: 3rem;
 }
 
-.title {
-  font-size: 2rem;
-  margin-bottom: 2rem;
+.left {
+    float: left;
+    width: 40%;
+    position: fixed;
+    height: 100%;
+    left: 0rem;
+    top: 0rem;
+    background-color: #0ACEFA;
+    padding: 1rem;
 }
 
-.input-group {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.right {
+    float: right;
+    width: 60%;
+    position: fixed;
+    right: 0rem;
+    top: 0rem;
+    padding: 1rem;
 }
 
-#playlist-name {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 4px 0 0 4px;
-  outline: none;
-  width: 300px;
-}
-
-.btn {
-  cursor: pointer;
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  border: none;
-  border-radius: 0 4px 4px 0;
-  outline: none;
-  transition: all 0.3s ease;
-}
-
-.btn-primary {
-  background-color: #1db954;
-  color: #ffffff;
-}
-
-.btn-primary:hover {
-  background-color: #148f3c;
+#musicPlayer {
+    width: 90%;
+    background-color: #0ACEFA;
 }
 
 
