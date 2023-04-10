@@ -49,28 +49,33 @@ body {                    /* no white border around browser window */
     width: 90%;
     margin: auto;
     margin-bottom: 3rem;
-    padding: 1rem;
     display: flex;
     flex-direction: row;
+    box-shadow: .75rem .75rem 3rem black;
 }
 
 #suggestions {
     width: 40%;
+    border-radius: 1rem 0rem 0rem 1rem;
     background-color: #1DB954;
     padding: 1.5rem;
+    z-index: 1;
 }
 
 #artists {
     width: 60%;
+    border-radius: 0rem 1rem 1rem 0rem;
     background-color: #535353;
     padding: 1.5rem;
 }
 
 #playlist-form {
+    border-radius: 1rem;
     width: 90%;
     margin: auto;
     background-color: #535353;
     padding: 1.5rem;
+    box-shadow: .75rem .75rem 3rem black;
 }
 
 a {
