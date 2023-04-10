@@ -3,7 +3,6 @@
 
 <head>
   <title>&#127760 Explorify</title>
-  <title>&#127760 Explorify</title>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="main.css">
   <style type="text/css">
@@ -225,43 +224,33 @@
           },
           success: function (response) {
             console.log("Recently Played Tracks:");
-            var tracksAndArtistsList = [];
 
+
+            // create a new array to store the artists
             response.items.forEach(function (item) {
-              var trackName = item.track.name;
               var artistName = item.track.artists[0].name;
-              var trackAndArtist = trackName + " by " + artistName;
-
-              if (!tracksAndArtistsList.includes(trackAndArtist)) {
-                tracksAndArtistsList.push(trackAndArtist);
-              }
-
-              if (!artistsList.includes(artistName)) {
+              if (!artistsList.includes(artistName)) { // add the artist to the array only if it doesn't already exist
                 artistsList.push(artistName);
               }
             });
-
-            console.log(tracksAndArtistsList);
+            console.log(artistsList); // print the array to the console
 
             localStorage.setItem("recentlyPlayedArtists", JSON.stringify(artistsList));
-
-            var tracksAndArtists = document.getElementById("artists");
-            var content = "<h2>Recently Played Tracks and Artists:</h2>";
-
-            tracksAndArtistsList.forEach(function (trackAndArtist) {
-              content += "<li>" + trackAndArtist + "</li>";
+            // display the array on the page
+            var artists = document.getElementById("artists");
+            var artistsContent = "<h2>Recently Played Artists:</h2><ul>";
+            artistsList.forEach(function (artistName) {
+              artistsContent += "<li>" + artistName + "</li>"; // add each artist to the Content
             });
-
-            content += "</ul>";
-            console.log(content);
-            tracksAndArtists.innerHTML = content;
-            return content;
+            artistsContent += "</ul>";
+            console.log(artistsContent);
+            artists.innerHTML = artistsContent;
+            return artistsContent;
           },
           error: function (xhr, status, error) {
             console.log("Error: " + error);
           }
         });
-
       }
 
 
@@ -328,9 +317,12 @@
           // Choose a random track from the recently played list
           const track = response.items[Math.floor(Math.random() * response.items.length)].track;
 
+          // Display the chosen track
           function show() {
+
             var songPlayed = false;
 
+            // Use the chosen track as the seed for getting a track suggestion
             $.ajax({
               url: "https://api.spotify.com/v1/recommendations",
               headers: {
@@ -344,32 +336,57 @@
                 console.log(response);
                 let i = 0;
                 var tracklist = response;
-
-                var storeArtistList = JSON.parse(localStorage.getItem("recentlyPlayedArtist"));
+                var storeArtistList = JSON.parse(localStorage.getItem("recentlyPlayedArtists"));
+                //var newList = JSON.parse(localStorage.getItem("suggestedList"));
 
                 do {
-                  // Get recommendation
+                  //get reccomendation
                   var track = tracklist.tracks[i];
 
-                  // Check if the artist is in the recently played list
+                  // check if the artist is in the recently played list
                   var artistName = track.artists[0].name;
                   var artistInRecentPlays = storeArtistList.includes(artistName);
 
                   if (artistInRecentPlays) {
                     console.log("Track: " + track.name + " not displayed " + artistName + " appears in listened list.");
                     i++;
-                    // Iterate if track appears
-                  } else {
-                    // Build the preview
+                    //iterate if track appears
+                  }
+
+                  // only show if artist not in recently listened
+                  else {
+                    // build the preview
                     var trackName = track.name;
                     var albumName = track.album.name;
                     var previewUrl = track.preview_url;
                     var trackUrl = track.external_urls.spotify;
                     var imageUrl = track.album.images[0].url;
-                    var previewHtml = "<h2>Your Suggestion:</h2><img src='" + imageUrl + "' style='max-width: 150px; max-height: 150px;'><p><a href='" + trackUrl + "'>" + trackName + " by " + artistName + "</a></p><p>From the album: " + albumName + "</p><audio id='previewAudio' src='" + previewUrl + "' controls></audio>";
+                    var previewHtml = `
+                <h2>
+                  Your Suggestion:
+                </h2>
+                <div>
+                  <img src='${imageUrl}' style='width: 20rem; height: auto; margin: auto;'>
+                </div>
+                <div style="color:#121212; font-size:1.2rem;">
+                  <a href='${trackUrl}'> ${trackName} by ${artistName}</a><br/>
+                  From the album: ${albumName}<br/>
+                  <audio id='previewAudio' src='${previewUrl}' controls></audio>
+                </div>
+                `;
                     console.log(i);
-
+                    // display the recommendation
                     suggestions.innerHTML = previewHtml;
+
+                    //store the artist name in the recently played list
+                    storeArtistList.push(artistName);
+                    localStorage.setItem("recentlyPlayedArtists", JSON.stringify(storeArtistList));
+
+                    // //stores the suggested track in a new list of the app's suggestions                    
+                    // newList.push(track);
+                    // localStorage.setItem("suggestedList", JSON.stringify(newList));
+                    // console.log("new artist list: " + newList);
+
 
                     // Add event listener to the audio element
                     var audioElement = document.getElementById('previewAudio');
@@ -378,7 +395,7 @@
                       songPlayed = true;
                       if (pauseTimestamp) {
                         var currentTime = new Date().getTime();
-                        if (currentTime - pauseTimestamp >= 5000) {
+                        if (currentTime - pauseTimestamp >= 15000) {
                           i++;
                           show();
                         }
@@ -393,25 +410,25 @@
                         i++;
                         show();
                       }
-                    }, 5000);
+                    }, 15000);
 
                     break;
                   }
-                  } while  (artistInRecentPlays);
+
+
+                } while (artistInRecentPlays);
               },
               error: function (xhr, status, error) {
                 console.log(`Error: ${error}`);
               }
             });
           }
-
-          show();
-        },
-        error: function (xhr, status, error) {
-          console.log(`Error: ${error}`);
-        }
-      });
-
+            show();
+          },
+          error: function (xhr, status, error) {
+            console.log(`Error: ${error}`);
+          }
+        });
 
 
 
