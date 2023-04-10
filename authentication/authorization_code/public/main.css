@@ -62,6 +62,12 @@ body {                    /* no white border around browser window */
     z-index: 1;
 }
 
+audio {
+    width: 90%;
+    margin: auto;
+    margin-top: 1rem;
+}
+
 #artists {
     width: 60%;
     border-radius: 0rem 1rem 1rem 0rem;
