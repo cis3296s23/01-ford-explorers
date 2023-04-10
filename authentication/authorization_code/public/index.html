@@ -239,6 +239,9 @@
               }
             });
             console.log(artistsList); // print the array to the console
+
+            localStorage.setItem("recentlyPlayedArtist",JSON.stringify(artistsList));
+            
             // display the array on the page
             var artists = document.getElementById("artists");
             var artistsContent = "<h2>Recently Played Artists:</h2><ul>";
