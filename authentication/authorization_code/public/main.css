@@ -17,3 +17,43 @@ div {
     padding: 1rem;
     border:#05657A;
 }
+
+/* Styling the input field */
+#playlist-name {
+    background-color: #E5E5EA;
+    border: none;
+    border-radius: 6px;
+    color: #1C1C1E;
+    font-size: 16px;
+    font-weight: bold;
+    height: 40px;
+    padding: 8px;
+    width: 300px;
+  }
+  
+  /* Styling the button */
+  #createPlaylist {
+    background-color: #1C1C1E;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    height: 40px;
+    margin-left: 12px;
+    padding: 8px;
+    text-align: center;
+    text-decoration: none;
+  }
+  
+  /* Styling the button when hovered */
+  #createPlaylist:hover {
+    background-color: #141417;
+    cursor: pointer;
+  }
+
+  
+
+  
+  
+  

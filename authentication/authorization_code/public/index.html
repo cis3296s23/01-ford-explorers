@@ -39,13 +39,14 @@
 
       <div id="playlist-form">
         <h2>Create or update playlist:</h2>
-        <input type="text" id="playlist-name" placeholder="Enter playlist name" style="color: black; font-size: 16px;">
+        <input type="text" id="playlist-name" placeholder="Enter playlist name">
         <button id="createPlaylist" class="btn btn-primary">Create or Update Playlist</button>
       </div>
     </div>
   </div>
 
   <script id="user-profile-template" type="text/x-handlebars-template">
+    <div class="user-profile">
       <h1>Logged in as {{display_name}}</h1>
       <div class="media">
         <div class="pull-left">
@@ -63,7 +64,8 @@
           </dl>
         </div>
       </div>
-    </script>
+    </div>
+  </script>
 
 
 
