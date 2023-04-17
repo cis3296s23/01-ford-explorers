@@ -120,53 +120,63 @@ a {
 }
 
 .playlist-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  max-height: 600px; /* Set a desired max-height */
+  overflow-y: auto; /* Enable vertical scrolling when needed */
+  padding: 1rem; /* Add padding for a better appearance */
+  width: 100%;
+}
 
-  .playlist-dropdown {
-    background-color: #1DB954;
-    border-radius: 5px;
-    color: white;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    max-width: 400px; /* Updated max-width */
-    overflow: hidden;
-    padding: 0.5rem;
-    position: relative;
-    transition: background-color 0.3s;
-    width: 100%;
-  }
+.playlist-dropdown {
+  background-color: #1DB954;
+  border-radius: 5px;
+  color: white;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  max-width: 400px; /* Updated max-width */
+  overflow: hidden;
+  padding: 0.5rem;
+  position: relative;
+  transition: background-color 0.3s;
+  width: 100%;
+}
 
-  .playlist-dropdown:hover {
-    background-color: #1ED760;
-  }
+.playlist-dropdown:hover {
+  background-color: #1ED760;
+}
 
-  .playlist-dropdown summary {
-    cursor: pointer;
-    display: block;
-    font-weight: bold;
-    outline: none;
-  }
+.playlist-dropdown summary {
+  cursor: pointer;
+  display: block;
+  font-weight: bold;
+  outline: none;
+}
 
-  .playlist-dropdown summary::-webkit-details-marker {
-    display: none;
-  }
+.playlist-dropdown summary::-webkit-details-marker {
+  display: none;
+}
 
-  .playlist-dropdown summary::after {
-    content: '▼';
-    font-size: 0.8rem;
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-  }
+.playlist-dropdown summary::after {
+  content: '▼';
+  font-size: 0.8rem;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
 
-  .playlist-dropdown[open] summary::after {
-    content: '▲';
-  }
+.playlist-dropdown[open] summary::after {
+  content: '▲';
+}
+
+
+.playlist-dropdown[open] {
+  max-height: 300px; 
+  overflow-y: auto; 
+}
 
   .song-list {
     background-color: #282828;
