@@ -8,25 +8,11 @@ These examples cover:
 * Client Credentials flow
 * Implicit Grant flow
 
-### Using your own credentials
-You will need to register your app and get your own credentials from the Spotify for Developers Dashboard.
-
-To do so, go to [your Spotify for Developers Dashboard](https://beta.developer.spotify.com/dashboard) and create your application. For the examples, we registered these Redirect URIs:
-
-* http://localhost:8888 (For website)
-* http://localhost:8888/callback (For Redirect URIs)
-
-Once you have created your app, click on the app that you just created, then click on setting, replace the `client_id`, `redirect_uri` and `client_secret` in the examples `01-fore-explorers/authentication/authentication_code/app.js` with the ones you get from My Applications.
-
-* var client_id = ''; // Your client id
-* var client_secret = ''; // Your secret
-* var redirect_uri = 'http://localhost:8888/callback'; // Change to that if it is not your redirect uri 
-
 ## Installation
 
-These examples run on Node.js. On [its website](http://www.nodejs.org/download/) you can find instructions on how to install it. You can also follow [this gist](https://gist.github.com/isaacs/579814) for a quick and easy way to install Node.js and npm.
+These examples run on Node.js. On its [website](https://nodejs.org/en/download) you can find instructions on how to install it. You can also follow this [gist](https://gist.github.com/isaacs/579814) for a quick and easy way to install Node.js and npm.
 
-You need to install Node.js first. Once installed, clone the repository and navigate to the folder and install its dependencies running:
+You need to install Node.js first. Once installed, clone the repository, navigate to the folder and install its dependencies running:
 
     $ npm install
     
@@ -35,6 +21,20 @@ You might also need to install request and request-promise-native npm packages
     $ npm install request
     $ npm install request-promise-native
 
+
+### Using your own credentials
+You will need to register your app and get your own credentials from the Spotify for Developers Dashboard.
+
+To do so, go to your [Spotify for Developers Dashboard](https://beta.developer.spotify.com/dashboard) and create your application. For the examples, we registered these Redirect URIs:
+
+* http://localhost:8888 (For website)
+* http://localhost:8888/callback (For Redirect URIs)
+
+Once you have created your app, click on the app that you just created, then click on setting, replace the `client_id`, `redirect_uri` and `client_secret` in the examples `01-fore-explorers/authentication/authentication_code/app.js` with the ones you get from My Applications.
+
+* var client_id = ''; // Your client id
+* var client_secret = ''; // Your secret
+* var redirect_uri = 'http://localhost:8888/callback'; 
 
 
 ## Running the examples
