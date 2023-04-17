@@ -12,7 +12,7 @@ li {
 }
 
 body {                    /* no white border around browser window */
-    font-family: 'Gotham Circular', sans-serif;    /* no tails on the font like Times New Roman */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     background-color: #212121;  /* background color of the page */
     color: white; /* text will be white */
     font-size: 1.5rem;
@@ -75,13 +75,26 @@ audio {
     padding: 1.5rem;
 }
 
-#playlist-form {
+#playlist-name {
     border-radius: 1rem;
     width: 90%;
     margin: auto;
-    background-color: #535353;
+    background-color: #282828;
     padding: 1.5rem;
-    box-shadow: .75rem .75rem 3rem black;
+    box-shadow: .75rem .75rem 3rem rgba(0, 0, 0, 0.3);
+    border: 1px solid #484848;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+#playlist-name:focus {
+    outline: none;
+    border-color: #1DB954;
+}
+
+#playlist-name::placeholder {
+    color: #999;
+    opacity: 1;
 }
 
 a {
@@ -94,8 +107,14 @@ a {
     background-color: #1DB954;
     color: white;
     border: none;
-    padding: 1rem;
+    padding: 1rem 2rem;
     font-size: 1.5rem;
     border-radius: 0.5rem;
     margin: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#createPlaylist:hover {
+    background-color: #159c48;
 }
