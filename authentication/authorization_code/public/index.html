@@ -2,9 +2,10 @@
 <html>
 
 <head>
-  <title>&#127760 Explorify</title>
+  <title>Explorify</title>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="main.css">
+  <link rel="icon" href="favicon.png" type="image/x-icon">
   <style type="text/css">
     #login,
     #loggedin {
@@ -217,40 +218,46 @@
 
 
 
-        $.ajax({
-          url: "https://api.spotify.com/v1/me/player/recently-played",
-          headers: {
-            "Authorization": "Bearer " + access_token
-          },
-          success: function (response) {
-            console.log("Recently Played Tracks:");
+        function fetchRecentlyPlayed() {
+          $.ajax({
+            url: "https://api.spotify.com/v1/me/player/recently-played",
+            headers: {
+              "Authorization": "Bearer " + access_token
+            },
+            success: function (response) {
+              console.log("Recently Played Tracks:");
 
+              var artistsList = [];
+              response.items.forEach(function (item) {
+                var artistName = item.track.artists[0].name;
+                if (!artistsList.includes(artistName)) {
+                  artistsList.push(artistName);
+                }
+              });
+              console.log(artistsList);
 
-            // create a new array to store the artists
-            response.items.forEach(function (item) {
-              var artistName = item.track.artists[0].name;
-              if (!artistsList.includes(artistName)) { // add the artist to the array only if it doesn't already exist
-                artistsList.push(artistName);
-              }
-            });
-            console.log(artistsList); // print the array to the console
+              localStorage.setItem("recentlyPlayedArtists", JSON.stringify(artistsList));
+              var artists = document.getElementById("artists");
+              var artistsContent = "<h2>Recently Played Artists:</h2><ul>";
+              artistsList.forEach(function (artistName) {
+                artistsContent += "<li>" + artistName + "</li>";
+              });
+              artistsContent += "</ul>";
+              console.log(artistsContent);
+              artists.innerHTML = artistsContent;
+              return artistsContent;
+            },
+            error: function (xhr, status, error) {
+              console.log("Error: " + error);
+            }
+          });
+          console.log("refreshed");
+        }
 
-            localStorage.setItem("recentlyPlayedArtists", JSON.stringify(artistsList));
-            // display the array on the page
-            var artists = document.getElementById("artists");
-            var artistsContent = "<h2>Recently Played Artists:</h2><ul>";
-            artistsList.forEach(function (artistName) {
-              artistsContent += "<li>" + artistName + "</li>"; // add each artist to the Content
-            });
-            artistsContent += "</ul>";
-            console.log(artistsContent);
-            artists.innerHTML = artistsContent;
-            return artistsContent;
-          },
-          error: function (xhr, status, error) {
-            console.log("Error: " + error);
-          }
-        });
+        fetchRecentlyPlayed(); // Call the function once to fetch the recently played tracks initially
+        setInterval(fetchRecentlyPlayed, 15000); // Refresh the recent play list every 15 seconds
+        
+
       }
 
 
@@ -423,12 +430,12 @@
               }
             });
           }
-            show();
-          },
-          error: function (xhr, status, error) {
-            console.log(`Error: ${error}`);
-          }
-        });
+          show();
+        },
+        error: function (xhr, status, error) {
+          console.log(`Error: ${error}`);
+        }
+      });
 
 
 
