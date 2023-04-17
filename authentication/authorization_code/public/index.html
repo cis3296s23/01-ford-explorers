@@ -585,6 +585,7 @@
                   <audio id='previewAudio' src='${previewUrl}' controls></audio>
                 </div>
                 <button id="addToPlaylistBtn" style="margin-top: 1rem;">Add to Playlist</button>
+                <button id="loadSuggestionsBtn">Load Suggestions</button>
                 <div id="playlistSelector" style="display: none;"></div>
                 `;
                     console.log(i);
@@ -596,9 +597,17 @@
                       displayPlaylistOptions(track.id);
                     });
 
+          
+
                     //store the artist name in the recently played list
                     storeArtistList.push(artistName);
                     localStorage.setItem("recentlyPlayedArtists", JSON.stringify(storeArtistList));
+
+                    var newSuggestion = document.getElementById('loadSuggestionsBtn');
+                    newSuggestion.addEventListener('click', function () {  
+                      show();
+
+                    });
 
                     // //stores the suggested track in a new list of the app's suggestions                    
                     // newList.push(track);
