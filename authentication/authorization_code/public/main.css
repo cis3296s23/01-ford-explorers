@@ -118,3 +118,129 @@ a {
 #createPlaylist:hover {
     background-color: #159c48;
 }
+
+.playlist-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .playlist-dropdown {
+    background-color: #1DB954;
+    border-radius: 5px;
+    color: white;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    max-width: 400px; /* Updated max-width */
+    overflow: hidden;
+    padding: 0.5rem;
+    position: relative;
+    transition: background-color 0.3s;
+    width: 100%;
+  }
+
+  .playlist-dropdown:hover {
+    background-color: #1ED760;
+  }
+
+  .playlist-dropdown summary {
+    cursor: pointer;
+    display: block;
+    font-weight: bold;
+    outline: none;
+  }
+
+  .playlist-dropdown summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .playlist-dropdown summary::after {
+    content: '▼';
+    font-size: 0.8rem;
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .playlist-dropdown[open] summary::after {
+    content: '▲';
+  }
+
+  .song-list {
+    background-color: #282828;
+    border-radius: 5px;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .song-list li {
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+
+  .song-list li:last-child {
+    margin-bottom: 0;
+  }
+
+  .toast {
+    background-color: #333;
+    border-radius: 5px;
+    color: white;
+    font-size: 1.1rem;
+    left: 50%;
+    padding: 0.5rem 1rem;
+    position: fixed;
+    top: 1rem;
+    transform: translateX(-50%);
+    z-index: 9999;
+  }
+
+  #addToPlaylistBtn {
+    background-color: #1DB954;
+    border: none;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: center;
+    text-decoration: none;
+    padding: 12px 24px;
+    margin-top: 1rem;
+    cursor: pointer;
+    border-radius: 50px;
+    transition: background-color 0.3s;
+  }
+
+  #addToPlaylistBtn:hover {
+    background-color: #18A64D;
+  }
+
+  #playlistSelector {
+    background-color: #121212;
+    color: white;
+    font-size: 1rem;
+    padding: 16px;
+    margin-top: 1rem;
+    border-radius: 8px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  #playlistSelector ul {
+    list-style-type: none;
+    padding: 0;
+  }
+
+  #playlistSelector li {
+    margin-bottom: 8px;
+  }
+
+  #playlistSelector a {
+    color: #1DB954;
+    text-decoration: none;
+  }
+
+  #playlistSelector a:hover {
+    text-decoration: underline;
+  }
