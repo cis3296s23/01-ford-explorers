@@ -163,7 +163,7 @@ a {
 
 .playlist-dropdown summary::after {
   content: '▼';
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   position: absolute;
   right: 1rem;
   top: 50%;
@@ -189,6 +189,7 @@ a {
   .song-list li {
     color: white;
     margin-bottom: 0.5rem;
+    font-size: 1rem;
   }
 
   .song-list li:last-child {
