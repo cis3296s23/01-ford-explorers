@@ -1,0 +1,50 @@
+ //Vestigile code from testing, may be useful later please do not delete.
+      /*
+            $.ajax({
+              url: "https://api.spotify.com/v1/me/playlists",
+              headers: {
+                "Authorization": "Bearer " + access_token
+              },
+              success: function (response) {
+                console.log("User Playlists:");
+                var playlists = response.items.filter(function (item) {
+                  return item.name;
+                });
+      
+                var playlistMap = new Map();
+      
+                playlists.forEach(function (item) {
+                  playlistMap.set(item.name, item.id);
+                });
+      
+                console.log(playlistMap);
+      
+                var tracksContent = "<h2>Tracks:</h2>";
+      
+                playlistMap.forEach(function (playlistId, playlistName) {
+                  $.ajax({
+                    url: "https://api.spotify.com/v1/playlists/" + playlistId + "/tracks",
+                    headers: {
+                      "Authorization": "Bearer " + access_token
+                    },
+                    success: function (response) {
+                      console.log("Tracks for playlist " + playlistName + ":");
+                      tracksContent += "<h3>" + playlistName + "</h3><ul>";
+                      response.items.forEach(function (item) {
+                        console.log(item.track.name + " by " + item.track.artists[0].name);
+                        tracksContent += "<li>" + item.track.name + " by " + item.track.artists[0].name + "</li>";
+                      });
+                      tracksContent += "</ul>";
+                      track.innerHTML = tracksContent;
+                    },
+                    error: function (xhr, status, error) {
+                      console.log("Error: " + error);
+                    }
+                  });
+                });
+              },
+              error: function (xhr, status, error) {
+                console.log("Error: " + error);
+              }
+            });
+            */
