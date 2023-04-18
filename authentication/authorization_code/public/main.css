@@ -127,14 +127,16 @@ a {
   max-height: 600px; /* Set a desired max-height */
   overflow-y: auto; /* Enable vertical scrolling when needed */
   padding: 1rem; /* Add padding for a better appearance */
-  width: 100%;
+  width: 90%;
+  margin: auto;
+  margin-top: .75rem;
 }
 
 .playlist-dropdown {
-  background-color: #1DB954;
+  background-color: #535353;
   border-radius: 5px;
   color: white;
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   margin-bottom: 1rem;
   max-width: 400px; /* Updated max-width */
   overflow: hidden;
@@ -145,7 +147,7 @@ a {
 }
 
 .playlist-dropdown:hover {
-  background-color: #1ED760;
+  background-color: #B3B3B3;
 }
 
 .playlist-dropdown summary {
@@ -179,7 +181,6 @@ a {
 }
 
   .song-list {
-    background-color: #282828;
     border-radius: 5px;
     margin-top: 0.5rem;
     padding: 0.5rem;
@@ -207,8 +208,8 @@ a {
     z-index: 9999;
   }
 
-  #addToPlaylistBtn {
-    background-color: #1DB954;
+  #addToPlaylistBtn, #loadSuggestionsBtn {
+    background-color: #535353;
     border: none;
     color: white;
     font-weight: 600;
@@ -222,8 +223,8 @@ a {
     transition: background-color 0.3s;
   }
 
-  #addToPlaylistBtn:hover {
-    background-color: #18A64D;
+  #addToPlaylistBtn:hover, #loadSuggestionsBtn:hover {
+    background-color: #B3B3B3;
   }
 
   #playlistSelector {
