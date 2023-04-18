@@ -256,3 +256,39 @@ a {
   #playlistSelector a:hover {
     text-decoration: underline;
   }
+
+  .playlistPage {
+    display: none;
+    width: 70%;
+    position: fixed;
+    top: 0rem;
+    right: 0rem;
+  }
+
+  .nowPlaying {
+    width: 80%;
+    background-color: #535353;
+    color: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: auto;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: .75rem .75rem 3rem rgba(0, 0, 0, 0.3);
+  }
+
+  .nowPlaying a {
+    text-decoration: none;
+  }
+
+  .playlistPage table{
+    width: 80%;
+    margin: auto;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+  }
+
+  .playlistPage table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #282828;
+  }
