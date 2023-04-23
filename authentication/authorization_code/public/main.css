@@ -262,3 +262,6 @@ a {
   #playlistSelector a:hover {
     text-decoration: underline;
   }
+  #input{
+    color:white;  
+  }
