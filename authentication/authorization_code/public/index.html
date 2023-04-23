@@ -61,7 +61,7 @@
 
   <script id="user-profile-template" type="text/x-handlebars-template">
     <a href="{{external_urls.spotify}}">
-      <h1>Logged in as {{display_name}}</h1>
+      <h1>{{display_name}}</h1>
     </a>
           <img class="media-object" style='width: 20rem; height: auto; margin:auto;' src="{{images.0.url}}" />
         
@@ -546,7 +546,7 @@
                 "Authorization": "Bearer " + access_token
               },
               data: {
-                limit: 20,
+                limit: 50,
                 seed_tracks: track.id // Use the ID of the chosen track as the seed
               },
               success: function (response) {
@@ -655,12 +655,14 @@
                       pauseTimestamp = new Date().getTime();
                     });
 
-                    setTimeout(function () {
+
+                    //removed autoplay temporarily
+                   /* setTimeout(function () {
                       if (!songPlayed) {
                         i++;
                         show();
                       }
-                    }, 15000);
+                    }, 15000);*/
 
                     break;
                   }

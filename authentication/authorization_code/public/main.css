@@ -43,6 +43,7 @@ body {                    /* no white border around browser window */
     right: 0rem;
     top: 0rem;
     padding: 1rem;
+    margin-top:6rem;
 }
 
 #trackPlayer {
@@ -60,6 +61,7 @@ body {                    /* no white border around browser window */
     background-color: #1DB954;
     padding: 1.5rem;
     z-index: 1;
+    
 }
 
 audio {
@@ -264,4 +266,9 @@ a {
   }
   #input{
     color:white;  
+  }
+
+  #radio{
+    padding-top:5rem;
+    width: 30%;
   }
