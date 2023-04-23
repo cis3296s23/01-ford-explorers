@@ -73,6 +73,7 @@ audio {
     border-radius: 0rem 1rem 1rem 0rem;
     background-color: #535353;
     padding: 1.5rem;
+    font-size:5rem;
 }
 
 #playlist-name {
@@ -231,12 +232,16 @@ a {
   #playlistSelector {
     background-color: #121212;
     color: white;
-    font-size: 1rem;
+    font-size: 5rem;
     padding: 16px;
     margin-top: 1rem;
     border-radius: 8px;
-    max-height: 300px;
+    max-height: 460px;
     overflow-y: auto;
+    display:none;
+    width: 60%;
+    border-radius: 0rem 1rem 1rem 0rem;
+    padding: 1.5rem;
   }
 
   #playlistSelector ul {
@@ -245,14 +250,18 @@ a {
   }
 
   #playlistSelector li {
-    margin-bottom: 8px;
+    margin-bottom: 1px;
   }
 
   #playlistSelector a {
     color: #1DB954;
     text-decoration: none;
+    font-size:2rem;
   }
 
   #playlistSelector a:hover {
     text-decoration: underline;
+  }
+  #input{
+    color:white;  
   }
