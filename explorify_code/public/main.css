@@ -234,7 +234,6 @@ a {
     color: white;
     font-size: 5rem;
     padding: 16px;
-    margin-top: 1rem;
     border-radius: 8px;
     max-height: 460px;
     overflow-y: auto;
@@ -260,7 +259,7 @@ a {
   }
 
   #playlistSelector a:hover {
-    text-decoration: underline;
+    color:white;
   }
   #input{
     color:white;  
