@@ -277,10 +277,17 @@ function displayUserPlaylists(response, trackid) {
     
       var playlistOption = $('<li></li>').text(playlist.name);
       playlistOption.on('click', function() {
-        alert("made it here");
+        
         addTrackToPlaylist(playlist.id, trackid);
-        playlistSelector.hide();
-        displayUserPlaylists(response);
+      
+        //displayUserPlaylists(response);
+        //getUserPlaylists(); // Update the playlist in the div
+       
+                displayPlaylistOptions();
+              
+
+               
+                
       });
       playlistSelector.append(playlistOption);
     }
@@ -507,10 +514,10 @@ function displayPlaylistOptions(trackid = null) {
           triggerElement.addEventListener("click", function (event) {
             event.preventDefault();
             if (playlistSelector.style.display === "block") {
-              artists.style.display = "block"
+              artists.style.display = "block";
               playlistSelector.style.display = "none";
             } else {
-              artists.style.display = "none"
+              artists.style.display = "none";
               playlistSelector.style.display = "block";
             }
           });
