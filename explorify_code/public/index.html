@@ -276,6 +276,7 @@ function displayUserPlaylists(response, trackId) {
       playlistOption.on('click', function() {
         addTrackToPlaylist(playlist.id, trackId);
         playlistSelector.hide();
+        displayPlaylistOptions(trackId)
       });
       playlistSelector.append(playlistOption);
     }
@@ -423,9 +424,11 @@ function displayPlaylistOptions(trackId) {
           tracklist = recommendations;
           currentIndex = 0;
           displayTrack(trackID);
+          displayPlaylistOptions(trackID);
         });
       } else {
         displayTrack(trackID);
+        displayPlaylistOptions(trackID);
       }
     }
 
