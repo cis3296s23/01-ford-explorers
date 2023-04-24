@@ -12,7 +12,7 @@ These examples cover:
 
 These examples run on Node.js. On its [website](https://nodejs.org/en/download) you can find instructions on how to install it. You can also follow this [gist](https://gist.github.com/isaacs/579814) for a quick and easy way to install Node.js and npm.
 
-You need to install Node.js first. Once installed, clone the repository, navigate to the folder and install its dependencies running:
+You need to install Node.js first. Once installed, clone the repository, navigate to the folder `01-fore-explorers/explorify_code` and install its dependencies running:
 
     $ npm install
     
@@ -30,7 +30,7 @@ To do so, go to your [Spotify for Developers Dashboard](https://beta.developer.s
 * http://localhost:8888 (For website)
 * http://localhost:8888/callback (For Redirect URIs)
 
-Once you have created your app, click on the app that you just created, then click on setting, replace the `client_id`, `redirect_uri` and `client_secret` in the examples `01-fore-explorers/authentication/authentication_code/app.js` with the ones you get from My Applications.
+Once you have created your app, click on the app that you just created, then click on setting, replace the `client_id`, `redirect_uri` and `client_secret` in the examples `01-fore-explorers/explorify_code/app.js` with the ones you get from My Applications.
 
 * var client_id = ''; // Your client id
 * var client_secret = ''; // Your secret
