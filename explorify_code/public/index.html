@@ -77,29 +77,15 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
   <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
   <script>
+    let access_token;
     (function () {
-
-      /**
-       * Obtains parameters from the hash of the URL
-       * @return Object
-       */
-      function getHashParams() {
-        var hashParams = {};
-        var e, r = /([^&;=]+)=?([^&;]*)/g,
-          q = window.location.hash.substring(1);
-        while (e = r.exec(q)) {
-          hashParams[e[1]] = decodeURIComponent(e[2]);
-        }
-        return hashParams;
-      }
-
       var userProfileSource = document.getElementById('user-profile-template').innerHTML,
         userProfileTemplate = Handlebars.compile(userProfileSource),
         userProfilePlaceholder = document.getElementById('user-profile');
 
       var params = getHashParams();
 
-      var access_token = params.access_token,
+      access_token = params.access_token,
         refresh_token = params.refresh_token,
         error = params.error;
 
@@ -124,122 +110,7 @@
               userId = response.id;
               userProfilePlaceholder.innerHTML = userProfileTemplate(response);
 
-              function getUserPlaylists() {
-                $.ajax({
-                  url: 'https://api.spotify.com/v1/me/playlists',
-                  headers: {
-                    'Authorization': 'Bearer ' + access_token
-                  },
-                  success: function (response) {
-                    displayUserPlaylists(response);
-                  },
-                  error: function (error) {
-                    console.log('Error retrieving playlists:', error);
-                  }
-                });
-              }
 
-              function getPlaylistSongs(playlistId, callback) {
-                $.ajax({
-                  url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-                  headers: {
-                    'Authorization': 'Bearer ' + access_token
-                  },
-                  success: function (response) {
-                    callback(response.items);
-                  },
-                  error: function (error) {
-                    console.log('Error retrieving songs for playlist:', error);
-                  }
-                });
-              }
-
-              function displayUserPlaylists(response) {
-                var playlists = response.items;
-                var playlistContainer = $('#playList');
-                playlistContainer.empty();
-
-                playlists.forEach(function (playlist) {
-                  var playlistDropdown = $('<details class="playlist-dropdown"></details>');
-                  var playlistSummary = $('<summary></summary>').text(playlist.name);
-                  playlistDropdown.append(playlistSummary);
-
-                  getPlaylistSongs(playlist.id, function (songs) {
-                    var songList = $('<ul class="song-list"></ul>');
-
-                    songs.forEach(function (song) {
-                      var songTitle = song.track.name;
-                      var artistName = song.track.artists.map(artist => artist.name).join(', ');
-                      var songItem = $('<li></li>').text(`${songTitle} - ${artistName}`);
-                      songList.append(songItem);
-                    });
-
-                    playlistDropdown.append(songList);
-                  });
-
-                  playlistContainer.append(playlistDropdown);
-                });
-              }
-
-              function createOrUpdatePlaylist(name) {
-                // Retrieve the user's playlists
-                $.ajax({
-                  url: 'https://api.spotify.com/v1/me/playlists',
-                  headers: {
-                    'Authorization': 'Bearer ' + access_token
-                  },
-                  success: function (response) {
-                    // Check if the specified playlist already exists
-                    var existingPlaylist = response.items.find(function (playlist) {
-                      return playlist.name === name;
-                    });
-
-                    // If the playlist exists, show a toast message
-                    if (existingPlaylist) {
-                      console.log('Playlist already exists with ID:', existingPlaylist.id);
-                      showToast('You cannot create a new playlist with the same name.', 3000);
-                    } else {
-                      // If the playlist doesn't exist, create a new playlist and add tracks
-                      $.ajax({
-                        method: 'POST',
-                        url: 'https://api.spotify.com/v1/users/' + userId + '/playlists',
-                        headers: {
-                          'Authorization': 'Bearer ' + access_token,
-                          'Content-Type': 'application/json'
-                        },
-                        data: JSON.stringify({
-                          'name': name,
-                          'public': false,
-                          'collaborative': false,
-                          'description': 'A playlist of my favorite songs'
-                        }),
-                        success: function (response) {
-                          console.log('New playlist created with ID:', response.id);
-                          getUserPlaylists(); // Update the playlist in the div
-                        },
-                        error: function (error) {
-                          console.log('Error creating playlist:', error);
-                        }
-                      });
-                    }
-                  },
-                  error: function (error) {
-                    console.log('Error retrieving playlists:', error);
-                  }
-                });
-              }
-
-
-              // Handle the createOrUpdatePlaylist button click
-              $('#createPlaylist').on('click', function () {
-                var playlistName = $('#playlist-name').val();
-
-                if (playlistName) {
-                  createOrUpdatePlaylist(playlistName);
-                } else {
-                  alert("Please enter a playlist name.");
-                }
-              });
 
               getUserPlaylists();
               $('#login').hide();
@@ -255,357 +126,595 @@
 
         }
 
-        function showToast(message, duration) {
-          var toast = $('<div class="toast"></div>').text(message);
-          $('body').append(toast);
-          setTimeout(function () {
-            toast.remove();
-          }, duration || 3000);
-        }
-
-
-
-        function fetchRecentlyPlayed() {
-          $.ajax({
-            url: "https://api.spotify.com/v1/me/player/recently-played",
-            headers: {
-              "Authorization": "Bearer " + access_token
-            },
-            success: function (response) {
-              console.log("Recently Played Tracks:");
-
-              var artistsList = [];
-              response.items.forEach(function (item) {
-                var artistName = item.track.artists[0].name;
-                if (!artistsList.includes(artistName)) {
-                  artistsList.unshift(artistName);
-                }
-              });
-              console.log(artistsList);
-              if (localStorage.getItem("recentlyPlayedArtists") == null) {
-                localStorage.setItem("recentlyPlayedArtists", JSON.stringify(artistsList));
-              }
-
-              var storeArtistList = JSON.parse(localStorage.getItem("recentlyPlayedArtists"));
-              var artists = document.getElementById("artists");
-              var artistsContent = "<h2>Recently Played Artists:</h2><ul>";
-              var firstTenArtists = storeArtistList.slice(0, 5);
-              firstTenArtists.forEach(function (artistName) {
-                artistsContent += "<li>" + artistName + "</li>";
-              });
-              artistsContent += "</ul>";
-              console.log(artistsContent);
-              artists.innerHTML = artistsContent;
-            },
-            error: function (xhr, status, error) {
-              console.log("Error: " + error);
-            }
-          });
-          console.log("refreshed");
-        }
 
         fetchRecentlyPlayed(); // Call the function once to fetch the recently played tracks initially
         setInterval(fetchRecentlyPlayed, 15000); // Refresh the recent play list every 15 seconds
 
+        $.ajax({
+          url: "https://api.spotify.com/v1/me/player/recently-played",
+          headers: {
+            "Authorization": "Bearer " + access_token
+          },
+          data: {
+            limit: 50 // Get the 50 most recently played tracks
+          },
+          success: function (response) {
+            // Choose a random track from the recently played list
+            const track = response.items[Math.floor(Math.random() * response.items.length)].track;
+            window.addTrackToPlaylist = addTrackToPlaylist;
+
+            // Display the chosen track
+
+            show(track.id);
+          },
+          error: function (xhr, status, error) {
+            console.log(`Error: ${error}`);
+          }
+        });
+
 
       }
+    })();
 
 
+    function showToast(message, duration) {
+      var toast = $('<div class="toast"></div>').text(message);
+      $('body').append(toast);
+      setTimeout(function () {
+        toast.remove();
+      }, duration || 3000);
+    }
+
+
+
+    function fetchRecentlyPlayed() {
       $.ajax({
         url: "https://api.spotify.com/v1/me/player/recently-played",
         headers: {
           "Authorization": "Bearer " + access_token
         },
-        data: {
-          limit: 50 // Get the 50 most recently played tracks
+        success: function (response) {
+          console.log("Recently Played Tracks:");
+
+          var artistsList = [];
+          response.items.forEach(function (item) {
+            var artistName = item.track.artists[0].name;
+            if (!artistsList.includes(artistName)) {
+              artistsList.unshift(artistName);
+            }
+          });
+          console.log(artistsList);
+          if (localStorage.getItem("recentlyPlayedArtists") == null) {
+            localStorage.setItem("recentlyPlayedArtists", JSON.stringify(artistsList));
+          }
+
+          var storeArtistList = JSON.parse(localStorage.getItem("recentlyPlayedArtists"));
+          var artists = document.getElementById("artists");
+          var artistsContent = "<h2>Recently Played Artists:</h2><ul>";
+          var firstTenArtists = storeArtistList.slice(0, 5);
+          firstTenArtists.forEach(function (artistName) {
+            artistsContent += "<li>" + artistName + "</li>";
+          });
+          artistsContent += "</ul>";
+          console.log(artistsContent);
+          artists.innerHTML = artistsContent;
+        },
+        error: function (xhr, status, error) {
+          console.log("Error: " + error);
+        }
+      });
+      console.log("refreshed");
+    }
+
+
+    function getUserPlaylists() {
+      $.ajax({
+        url: 'https://api.spotify.com/v1/me/playlists',
+        headers: {
+          'Authorization': 'Bearer ' + access_token
         },
         success: function (response) {
-          // Choose a random track from the recently played list
-          const track = response.items[Math.floor(Math.random() * response.items.length)].track;
+          displayUserPlaylists(response);
+        },
+        error: function (error) {
+          console.log('Error retrieving playlists:', error);
+        }
+      });
+    }
 
-          function showToast(message, duration) {
-            var toast = $('<div class="toast"></div>').text(message);
-            $('body').append(toast);
-            setTimeout(function () {
-              toast.remove();
-            }, duration || 3000);
-          }
+    function getPlaylistSongs(playlistId, callback) {
+      $.ajax({
+        url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+        headers: {
+          'Authorization': 'Bearer ' + access_token
+        },
+        success: function (response) {
+          callback(response.items);
+        },
+        error: function (error) {
+          console.log('Error retrieving songs for playlist:', error);
+        }
+      });
+    }
 
-          function getUserPlaylists1() {
+    function displayUserPlaylists(response) {
+      var playlists = response.items;
+      var playlistContainer = $('#playList');
+      playlistContainer.empty();
+
+      playlists.forEach(function (playlist) {
+        var playlistDropdown = $('<details class="playlist-dropdown"></details>');
+        var playlistSummary = $('<summary></summary>').text(playlist.name);
+        playlistDropdown.append(playlistSummary);
+
+        getPlaylistSongs(playlist.id, function (songs) {
+          var songList = $('<ul class="song-list"></ul>');
+
+          songs.forEach(function (song) {
+            var songTitle = song.track.name;
+            var artistName = song.track.artists.map(artist => artist.name).join(', ');
+            var songItem = $('<li></li>').text(`${songTitle} - ${artistName}`);
+            songList.append(songItem);
+          });
+
+          playlistDropdown.append(songList);
+        });
+
+        playlistContainer.append(playlistDropdown);
+      });
+    }
+
+    function createOrUpdatePlaylist(name) {
+      // Retrieve the user's playlists
+      $.ajax({
+        url: 'https://api.spotify.com/v1/me/playlists',
+        headers: {
+          'Authorization': 'Bearer ' + access_token
+        },
+        success: function (response) {
+          // Check if the specified playlist already exists
+          var existingPlaylist = response.items.find(function (playlist) {
+            return playlist.name === name;
+          });
+
+          // If the playlist exists, show a toast message
+          if (existingPlaylist) {
+            console.log('Playlist already exists with ID:', existingPlaylist.id);
+            showToast('You cannot create a new playlist with the same name.', 3000);
+          } else {
+            // If the playlist doesn't exist, create a new playlist and add tracks
             $.ajax({
-              url: 'https://api.spotify.com/v1/me/playlists',
-              headers: {
-                'Authorization': 'Bearer ' + access_token
-              },
-              success: function (response) {
-                displayUserPlaylists(response);
-              },
-              error: function (error) {
-                console.log('Error retrieving playlists:', error);
-              }
-            });
-          }
-
-          function getPlaylistSongs(playlistId, callback) {
-            $.ajax({
-              url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-              headers: {
-                'Authorization': 'Bearer ' + access_token
-              },
-              success: function (response) {
-                callback(response.items);
-              },
-              error: function (error) {
-                console.log('Error retrieving songs for playlist:', error);
-              }
-            });
-          }
-
-          function displayUserPlaylists(response) {
-            var playlists = response.items;
-            var playlistContainer = $('#playList');
-            playlistContainer.empty();
-
-            playlists.forEach(function (playlist) {
-              var playlistDropdown = $('<details class="playlist-dropdown"></details>');
-              var playlistSummary = $('<summary></summary>').text(playlist.name);
-              playlistDropdown.append(playlistSummary);
-
-              getPlaylistSongs(playlist.id, function (songs) {
-                var songList = $('<ul class="song-list"></ul>');
-
-                songs.forEach(function (song) {
-                  var songTitle = song.track.name;
-                  var artistName = song.track.artists.map(artist => artist.name).join(', ');
-                  var songItem = $('<li></li>').text(`${songTitle} - ${artistName}`);
-                  songList.append(songItem);
-                });
-
-                playlistDropdown.append(songList);
-              });
-
-              playlistContainer.append(playlistDropdown);
-            });
-          }
-
-
-          function getUserPlaylists(callback) {
-            $.ajax({
-              url: 'https://api.spotify.com/v1/me/playlists',
-              headers: {
-                'Authorization': 'Bearer ' + access_token
-              },
-              success: function (response) {
-                callback(response);
-              },
-              error: function (error) {
-                console.log('Error retrieving playlists:', error);
-              }
-            });
-          }
-
-          function displayPlaylistOptions(trackId) {
-            var playlistSelector = document.getElementById('playlistSelector');
-            getUserPlaylists(function (response) {
-              displayUserPlaylists(response, trackId);
-            });
-
-            function displayUserPlaylists(response, trackId) {
-              var playlistsHtml = '<ul><h2>Playlists</h2>';
-
-              response.items.forEach(function (playlist) {
-                playlistsHtml += `
-  <li>
-    <a href='#' onclick="addTrackToPlaylist('${playlist.id}', '${trackId}'); return false;">${playlist.name}</a>
-  </li>`;
-              });
-              
-              playlistsHtml += '</ul>';
-              playlistSelector.innerHTML = playlistsHtml;
-
-            }
-          }
-
-          function addTrackToPlaylist(playlistId, trackId) {
-            $.ajax({
-              url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-              type: 'POST',
+              method: 'POST',
+              url: 'https://api.spotify.com/v1/users/' + userId + '/playlists',
               headers: {
                 'Authorization': 'Bearer ' + access_token,
                 'Content-Type': 'application/json'
               },
               data: JSON.stringify({
-                uris: [`spotify:track:${trackId}`]
+                'name': name,
+                'public': false,
+                'collaborative': false,
+                'description': 'A playlist of my favorite songs'
               }),
               success: function (response) {
-                showToast("You successfully added the song to playlist", 4000);
-                console.log('Track added to playlist.');
+                console.log('New playlist created with ID:', response.id);
+                getUserPlaylists(); // Update the playlist in the div
               },
               error: function (error) {
-                showToast("Cannot add the song to playlist", 4000);
-                console.log('Error adding track to playlist:', error);
-              }
-
-            });
-            getUserPlaylists1()
-          }
-
-          window.addTrackToPlaylist = addTrackToPlaylist;
-
-          // Display the chosen track
-          function show() {
-
-            var songPlayed = false;
-
-            // Use the chosen track as the seed for getting a track suggestion
-            $.ajax({
-              url: "https://api.spotify.com/v1/recommendations",
-              headers: {
-                "Authorization": "Bearer " + access_token
-              },
-              data: {
-                limit: 20,
-                seed_tracks: track.id // Use the ID of the chosen track as the seed
-              },
-              success: function (response) {
-                console.log(response);
-                let i = 0;
-                var tracklist = response;
-                var storeArtistList = JSON.parse(localStorage.getItem("recentlyPlayedArtists"));
-                //var newList = JSON.parse(localStorage.getItem("suggestedList"));
-
-                do {
-                  //get reccomendation
-                  var track = tracklist.tracks[i];
-
-                  // check if the artist is in the recently played list
-                  var artistName = track.artists[0].name;
-                  var artistInRecentPlays = storeArtistList.includes(artistName);
-
-                  if (artistInRecentPlays) {
-                    console.log("Track: " + track.name + " not displayed " + artistName + " appears in listened list.");
-                    i++;
-                    //iterate if track appears
-                  }
-
-                  // only show if artist not in recently listened
-                  else {
-                    // build the preview
-                    var trackName = track.name;
-                    var albumName = track.album.name;
-                    var previewUrl = track.preview_url;
-                    var trackUrl = track.external_urls.spotify;
-                    var imageUrl = track.album.images[0].url;
-                    var previewHtml = `
-                <h2>
-                  Your Suggestion:
-                </h2>
-                <div>
-                  <img src='${imageUrl}' style='width: 20rem; height: auto; margin: auto;'>
-                </div>
-                <div style="color:#121212; font-size:1.2rem;">
-                  <a href='${trackUrl}'> ${trackName} by ${artistName}</a><br/>
-                  From the album: ${albumName}<br/>
-                  <audio id='previewAudio' src='${previewUrl}' controls></audio>
-                </div>
-                <button id="addToPlaylistBtn" style="margin-top: 1rem;">Add to Playlist</button>
-                <button id="loadSuggestionsBtn">Load Suggestions</button>
-                `;
-
-                
-                    console.log(i);
-                    // display the recommendation
-                    suggestions.innerHTML = previewHtml;
-                    fetchRecentlyPlayed();
-
-                    var addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
-                    addToPlaylistBtn.addEventListener('click', function () {
-                      displayPlaylistOptions(track.id);
-                    });
-
-                    var triggerElement = document.getElementById("addToPlaylistBtn");
-                    var playlistSelector = document.getElementById("playlistSelector");
-
-                    triggerElement.addEventListener("click", function (event) {
-                      event.preventDefault();
-                      if (playlistSelector.style.display === "block") {
-                        artists.style.display = "block"
-                        playlistSelector.style.display = "none";
-                      } else {
-                        artists.style.display = "none"
-                        playlistSelector.style.display = "block";
-                        
-                      }
-
-                    });
-
-
-                    //store the artist name in the recently played list
-                    storeArtistList.unshift(artistName);
-                    localStorage.setItem("recentlyPlayedArtists", JSON.stringify(storeArtistList));
-
-                    var newSuggestion = document.getElementById('loadSuggestionsBtn');
-                    newSuggestion.addEventListener('click', function () {
-                      show();
-
-                    });
-
-                    // //stores the suggested track in a new list of the app's suggestions                    
-                    // newList.push(track);
-                    // localStorage.setItem("suggestedList", JSON.stringify(newList));
-                    // console.log("new artist list: " + newList);
-
-
-                    // Add event listener to the audio element
-                    var audioElement = document.getElementById('previewAudio');
-                    var pauseTimestamp = null;
-                    audioElement.addEventListener('play', function () {
-                      songPlayed = true;
-                      if (pauseTimestamp) {
-                        var currentTime = new Date().getTime();
-                        if (currentTime - pauseTimestamp >= 15000) {
-                          i++;
-                          show();
-                        }
-                      }
-                    });
-                    audioElement.addEventListener('pause', function () {
-                      pauseTimestamp = new Date().getTime();
-                    });
-
-                    setTimeout(function () {
-                      if (!songPlayed) {
-                        i++;
-                        show();
-                      }
-                    }, 15000);
-
-                    break;
-                  }
-
-
-                } while (artistInRecentPlays);
-                fetchRecentlyPlayed();
-              },
-              error: function (xhr, status, error) {
-                console.log(`Error: ${error}`);
+                console.log('Error creating playlist:', error);
               }
             });
-
           }
-          show();
         },
-        error: function (xhr, status, error) {
-          console.log(`Error: ${error}`);
+        error: function (error) {
+          console.log('Error retrieving playlists:', error);
         }
       });
-
-
-
     }
-    )();
 
 
+    // Handle the createOrUpdatePlaylist button click
+    $('#createPlaylist').on('click', function () {
+      var playlistName = $('#playlist-name').val();
+
+      if (playlistName) {
+        createOrUpdatePlaylist(playlistName);
+      } else {
+        alert("Please enter a playlist name.");
+      }
+    });
+
+    /**
+     * Obtains parameters from the hash of the URL
+     * @return Object
+     */
+    function getHashParams() {
+      var hashParams = {};
+      var e, r = /([^&;=]+)=?([^&;]*)/g,
+        q = window.location.hash.substring(1);
+      while (e = r.exec(q)) {
+        hashParams[e[1]] = decodeURIComponent(e[2]);
+      }
+      return hashParams;
+    }
+
+    function getUserPlaylists1() {
+      $.ajax({
+        url: 'https://api.spotify.com/v1/me/playlists',
+        headers: {
+          'Authorization': 'Bearer ' + access_token
+        },
+        success: function (response) {
+          displayUserPlaylists(response);
+        },
+        error: function (error) {
+          console.log('Error retrieving playlists:', error);
+        }
+      });
+    }
+
+    function getPlaylistSongs(playlistId, callback) {
+      $.ajax({
+        url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+        headers: {
+          'Authorization': 'Bearer ' + access_token
+        },
+        success: function (response) {
+          callback(response.items);
+        },
+        error: function (error) {
+          console.log('Error retrieving songs for playlist:', error);
+        }
+      });
+    }
+
+    function displayUserPlaylists(response) {
+      var playlists = response.items;
+      var playlistContainer = $('#playList');
+      playlistContainer.empty();
+
+      playlists.forEach(function (playlist) {
+        var playlistDropdown = $('<details class="playlist-dropdown"></details>');
+        var playlistSummary = $('<summary></summary>').text(playlist.name);
+        playlistDropdown.append(playlistSummary);
+
+        getPlaylistSongs(playlist.id, function (songs) {
+          var songList = $('<ul class="song-list"></ul>');
+
+          songs.forEach(function (song) {
+            var songTitle = song.track.name;
+            var artistName = song.track.artists.map(artist => artist.name).join(', ');
+            var songItem = $('<li></li>').text(`${songTitle} - ${artistName}`);
+            songList.append(songItem);
+          });
+
+          playlistDropdown.append(songList);
+        });
+
+        playlistContainer.append(playlistDropdown);
+      });
+    }
+
+
+    function displayPlaylistOptions(trackId) {
+      var playlistSelector = document.getElementById('playlistSelector');
+      getUserPlaylists(function (response) {
+        displayUserPlaylists(response, trackId);
+      });
+
+      function displayUserPlaylists(response, trackId) {
+        var playlistsHtml = '<ul><h2>Playlists</h2>';
+
+        response.items.forEach(function (playlist) {
+          playlistsHtml += `
+  <li>
+    <a href='#' onclick="addTrackToPlaylist('${playlist.id}', '${trackId}'); return false;">${playlist.name}</a>
+  </li>`;
+        });
+
+        playlistsHtml += '</ul>';
+        playlistSelector.innerHTML = playlistsHtml;
+
+      }
+    }
+
+    function addTrackToPlaylist(playlistId, trackId) {
+      $.ajax({
+        url: `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+        type: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + access_token,
+          'Content-Type': 'application/json'
+        },
+        data: JSON.stringify({
+          uris: [`spotify:track:${trackId}`]
+        }),
+        success: function (response) {
+          showToast("You successfully added the song to playlist", 4000);
+          console.log('Track added to playlist.');
+        },
+        error: function (error) {
+          showToast("Cannot add the song to playlist", 4000);
+          console.log('Error adding track to playlist:', error);
+        }
+
+      });
+      getUserPlaylists1()
+    }
+
+    //start 
+
+    //Global variables
+var tracklist;
+var currentIndex = 0;
+
+function show(trackID) {
+  // Check if the tracklist is not already fetched
+  if (!tracklist || currentIndex >= tracklist.tracks.length) {
+    getRecommendations(trackID, function (recommendations) {
+      tracklist = recommendations;
+      currentIndex = 0;
+      displayTrack(trackID);
+    });
+  } else {
+    displayTrack(trackID);
+  }
+}
+
+function getRecommendations(trackID, callback) {
+  $.ajax({
+    url: "https://api.spotify.com/v1/recommendations",
+    headers: {
+      "Authorization": "Bearer " + access_token
+    },
+    data: {
+      limit: 20,
+      seed_tracks: trackID // Use the ID of the chosen track as the seed
+    },
+    success: function (response) {
+      callback(response);
+    },
+    error: function (xhr, status, error) {
+      console.log(`Error: ${error}`);
+    }
+  });
+}
+
+function displayTrack(trackID) {
+  var songPlayed = false;
+  var storeArtistList = JSON.parse(localStorage.getItem("recentlyPlayedArtists"));
+
+  while (currentIndex < tracklist.tracks.length) {
+    var track = tracklist.tracks[currentIndex];
+    var artistName = track.artists[0].name;
+    var artistInRecentPlays = storeArtistList.includes(artistName);
+
+    if (artistInRecentPlays) {
+      console.log("Track: " + track.name + " not displayed " + artistName + " appears in listened list.");
+      currentIndex++;
+    } else {
+      // Your existing code to build the preview and display it goes here
+      // ...
+      var trackName = track.name;
+              var albumName = track.album.name;
+              var previewUrl = track.preview_url;
+              var trackUrl = track.external_urls.spotify;
+              var imageUrl = track.album.images[0].url;
+              var previewHtml = `
+    <h2>
+      Your Suggestion:
+    </h2>
+    <div>
+      <img src='${imageUrl}' style='width: 20rem; height: auto; margin: auto;'>
+    </div>
+    <div style="color:#121212; font-size:1.2rem;">
+      <a href='${trackUrl}'> ${trackName} by ${artistName}</a><br/>
+      From the album: ${albumName}<br/>
+      <audio id='previewAudio' src='${previewUrl}' controls></audio>
+    </div>
+    <button id="addToPlaylistBtn" style="margin-top: 1rem;">Add to Playlist</button>
+    <button id="loadSuggestionsBtn">Load Suggestions</button>
+    `;
+
+    // display the recommendation
+suggestions.innerHTML = previewHtml;
+fetchRecentlyPlayed();
+
+var addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
+addToPlaylistBtn.addEventListener('click', function () {
+  displayPlaylistOptions(track.id);
+});
+
+var triggerElement = document.getElementById("addToPlaylistBtn");
+var playlistSelector = document.getElementById("playlistSelector");
+
+triggerElement.addEventListener("click", function (event) {
+  event.preventDefault();
+  if (playlistSelector.style.display === "block") {
+    artists.style.display = "block"
+    playlistSelector.style.display = "none";
+  } else {
+    artists.style.display = "none"
+    playlistSelector.style.display = "block";
+  }
+});
+
+// Store the artist name in the recently played list
+storeArtistList.unshift(artistName);
+      localStorage.setItem("recentlyPlayedArtists", JSON.stringify(storeArtistList));
+
+
+var newSuggestion = document.getElementById('loadSuggestionsBtn');
+newSuggestion.addEventListener('click', function () {
+  currentIndex++;
+  show(trackID);
+});
+
+    // Add event listener to the audio element
+              var audioElement = document.getElementById('previewAudio');
+
+      // Update event listener for 'ended' event
+      audioElement.addEventListener('ended', function () {
+        currentIndex++;
+        show(trackID);
+      });
+
+      audioElement.addEventListener('error', function () {
+        console.log('Audio preview not available for this track. Skipping...');
+        currentIndex++;
+        show(trackID);
+      });
+      
+      audioElement.play();
+      break;
+    }
+  }
+
+  if (currentIndex >= tracklist.tracks.length) {
+    // Get new recommendations if all tracks in the list have been checked
+    getRecommendations(trackID, function (recommendations) {
+      tracklist = recommendations;
+      currentIndex = 0;
+      displayTrack(trackID);
+    });
+  } else {
+    fetchRecentlyPlayed();
+  }
+}
+
+//end
+
+    // function show(trackID) {
+
+    //   var songPlayed = false;
+
+    //   // Use the chosen track as the seed for getting a track suggestion
+    //   $.ajax({
+    //     url: "https://api.spotify.com/v1/recommendations",
+    //     headers: {
+    //       "Authorization": "Bearer " + access_token
+    //     },
+    //     data: {
+    //       limit: 20,
+    //       seed_tracks: trackID // Use the ID of the chosen track as the seed
+    //     },
+    //     success: function (response) {
+    //       console.log(response);
+    //       let i = 0;
+    //       var tracklist = response;
+    //       var storeArtistList = JSON.parse(localStorage.getItem("recentlyPlayedArtists"));
+    //       //var newList = JSON.parse(localStorage.getItem("suggestedList"));
+
+    //       do {
+    //         //get reccomendation
+    //         var track = tracklist.tracks[i];
+
+    //         // check if the artist is in the recently played list
+    //         var artistName = track.artists[0].name;
+    //         var artistInRecentPlays = storeArtistList.includes(artistName);
+
+    //         if (artistInRecentPlays) {
+    //           console.log("Track: " + track.name + " not displayed " + artistName + " appears in listened list.");
+    //           i++;
+    //           //iterate if track appears
+    //         }
+
+    //         // only show if artist not in recently listened
+    //         else {
+    //           // build the preview
+    //           var trackName = track.name;
+    //           var albumName = track.album.name;
+    //           var previewUrl = track.preview_url;
+    //           var trackUrl = track.external_urls.spotify;
+    //           var imageUrl = track.album.images[0].url;
+    //           var previewHtml = `
+    // <h2>
+    //   Your Suggestion:
+    // </h2>
+    // <div>
+    //   <img src='${imageUrl}' style='width: 20rem; height: auto; margin: auto;'>
+    // </div>
+    // <div style="color:#121212; font-size:1.2rem;">
+    //   <a href='${trackUrl}'> ${trackName} by ${artistName}</a><br/>
+    //   From the album: ${albumName}<br/>
+    //   <audio id='previewAudio' src='${previewUrl}' controls></audio>
+    // </div>
+    // <button id="addToPlaylistBtn" style="margin-top: 1rem;">Add to Playlist</button>
+    // <button id="loadSuggestionsBtn">Load Suggestions</button>
+    // `;
+
+
+    //           console.log(i);
+    //           // display the recommendation
+    //           suggestions.innerHTML = previewHtml;
+    //           fetchRecentlyPlayed();
+
+    //           var addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
+    //           addToPlaylistBtn.addEventListener('click', function () {
+    //             displayPlaylistOptions(track.id);
+    //           });
+
+    //           var triggerElement = document.getElementById("addToPlaylistBtn");
+    //           var playlistSelector = document.getElementById("playlistSelector");
+
+    //           triggerElement.addEventListener("click", function (event) {
+    //             event.preventDefault();
+    //             if (playlistSelector.style.display === "block") {
+    //               artists.style.display = "block"
+    //               playlistSelector.style.display = "none";
+    //             } else {
+    //               artists.style.display = "none"
+    //               playlistSelector.style.display = "block";
+
+    //             }
+
+    //           });
+
+
+    //           //store the artist name in the recently played list
+    //           storeArtistList.unshift(artistName);
+    //           localStorage.setItem("recentlyPlayedArtists", JSON.stringify(storeArtistList));
+
+    //           var newSuggestion = document.getElementById('loadSuggestionsBtn');
+    //           newSuggestion.addEventListener('click', function () {
+    //             show(trackID);
+
+    //           });
+
+    //           // //stores the suggested track in a new list of the app's suggestions                    
+    //           // newList.push(track);
+    //           // localStorage.setItem("suggestedList", JSON.stringify(newList));
+    //           // console.log("new artist list: " + newList);
+
+
+    //           // Add event listener to the audio element
+    //           var audioElement = document.getElementById('previewAudio');
+              
+    //           audioElement.addEventListener('play', function () {
+    //             songPlayed = true;
+    //           });
+    //           audioElement.addEventListener('pause', function () {
+    //           });
+
+    //           audioElement.addEventListener('ended', function () {
+    //             i++;
+    //             show(trackID);
+    //           });
+
+
+    //           break;
+    //         }
+
+
+    //       } while (artistInRecentPlays);
+    //       fetchRecentlyPlayed();
+    //     },
+    //     error: function (xhr, status, error) {
+    //       console.log(`Error: ${error}`);
+    //     }
+    //   });
+
+    // }
 
   </script>
 </body>
