@@ -489,7 +489,7 @@ function displayTrack(trackID) {
     var artistName = track.artists[0].name;
     var artistInRecentPlays = storeArtistList.includes(artistName);
 
-    if (artistInRecentPlay || !track.preview_url) {
+    if (artistInRecentPlays || !track.preview_url) {
       console.log("Track: " + track.name + " not displayed " + artistName + " appears in listened list. Or a sample for the song does not exist.");
       currentIndex++;
     } else {
