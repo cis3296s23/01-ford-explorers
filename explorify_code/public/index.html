@@ -245,7 +245,7 @@ function getUserPlaylists(callback) {
 }
 
 // Updated displayUserPlaylists function
-function displayUserPlaylists(response) {
+function displayUserPlaylists(response, trackid) {
   var playlists = response.items;
   var playlistContainer = $('#playList');
   var playlistSelector = $('#playlistSelector');
@@ -273,23 +273,25 @@ function displayUserPlaylists(response) {
     playlistContainer.append(playlistDropdown);
 
     // Display the clickable playlist list for adding the track
+    if(trackid){
     
       var playlistOption = $('<li></li>').text(playlist.name);
       playlistOption.on('click', function() {
-        addTrackToPlaylist(playlist.id, trackId);
+        alert("made it here");
+        addTrackToPlaylist(playlist.id, trackid);
         playlistSelector.hide();
-        displayPlaylistOptions()
+        displayUserPlaylists(response);
       });
       playlistSelector.append(playlistOption);
-    
+    }
   });
 }
 
 // Updated displayPlaylistOptions function
-function displayPlaylistOptions() {
+function displayPlaylistOptions(trackid = null) {
   var playlistSelector = document.getElementById('playlistSelector');
   getUserPlaylists(function (response) {
-    displayUserPlaylists(response);
+    displayUserPlaylists(response, trackid);
   });
 }
 
@@ -496,7 +498,7 @@ function displayPlaylistOptions() {
 
           var addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
           addToPlaylistBtn.addEventListener('click', function () {
-            displayPlaylistOptions();
+            displayPlaylistOptions(track.id);
           });
 
           var triggerElement = document.getElementById("addToPlaylistBtn");
