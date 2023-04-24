@@ -232,7 +232,7 @@ a {
   #playlistSelector {
     background-color: #121212;
     color: white;
-    font-size: 5rem;
+    font-size: 4rem;
     padding: 16px;
     margin-top: 1rem;
     border-radius: 8px;
@@ -265,3 +265,53 @@ a {
   #input{
     color:white;  
   }
+
+  .spotify-button {
+    background-color: #1DB954;
+    border: none;
+    border-radius: 500px;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-family: "Circular Std", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    font-weight: 700;
+    outline: none;
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+    padding: 4px 8px;
+    font-size: 12px;
+    margin: 2px;
+  }
+  
+  .spotify-button:hover {
+    background-color: #1AA34A;
+  }
+  
+  .spotify-button:active {
+    background-color: #198A43;
+  }
+
+  .song-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #1db954;
+    color: white;
+  }
+
+  .spotify-song-link {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .spotify-song-link:hover {
+    text-decoration: underline;
+  }
+  
+  .spotify-song-link:visited {
+    color: #1db954; /* Spotify green */
+  }
+  
