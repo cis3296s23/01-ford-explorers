@@ -78,6 +78,8 @@
   <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
   <script>
     let access_token;
+    var userId;
+
     (function () {
       var userProfileSource = document.getElementById('user-profile-template').innerHTML,
         userProfileTemplate = Handlebars.compile(userProfileSource),
@@ -90,7 +92,7 @@
         error = params.error;
 
       var playlistMap = new Map();
-      var userId;
+     
 
       var artistsList = [];
 
@@ -243,7 +245,7 @@ function getUserPlaylists(callback) {
 }
 
 // Updated displayUserPlaylists function
-function displayUserPlaylists(response, trackId) {
+function displayUserPlaylists(response) {
   var playlists = response.items;
   var playlistContainer = $('#playList');
   var playlistSelector = $('#playlistSelector');
@@ -271,23 +273,23 @@ function displayUserPlaylists(response, trackId) {
     playlistContainer.append(playlistDropdown);
 
     // Display the clickable playlist list for adding the track
-    if (trackId) {
+    
       var playlistOption = $('<li></li>').text(playlist.name);
       playlistOption.on('click', function() {
         addTrackToPlaylist(playlist.id, trackId);
         playlistSelector.hide();
-        displayPlaylistOptions(trackId)
+        displayPlaylistOptions()
       });
       playlistSelector.append(playlistOption);
-    }
+    
   });
 }
 
 // Updated displayPlaylistOptions function
-function displayPlaylistOptions(trackId) {
+function displayPlaylistOptions() {
   var playlistSelector = document.getElementById('playlistSelector');
   getUserPlaylists(function (response) {
-    displayUserPlaylists(response, trackId);
+    displayUserPlaylists(response);
   });
 }
 
@@ -327,6 +329,7 @@ function displayPlaylistOptions(trackId) {
               success: function (response) {
                 console.log('New playlist created with ID:', response.id);
                 getUserPlaylists(); // Update the playlist in the div
+                displayPlaylistOptions();
               },
               error: function (error) {
                 console.log('Error creating playlist:', error);
@@ -424,11 +427,11 @@ function displayPlaylistOptions(trackId) {
           tracklist = recommendations;
           currentIndex = 0;
           displayTrack(trackID);
-          displayPlaylistOptions(trackID);
+          displayPlaylistOptions();
         });
       } else {
         displayTrack(trackID);
-        displayPlaylistOptions(trackID);
+        displayPlaylistOptions();
       }
     }
 
@@ -493,7 +496,7 @@ function displayPlaylistOptions(trackId) {
 
           var addToPlaylistBtn = document.getElementById('addToPlaylistBtn');
           addToPlaylistBtn.addEventListener('click', function () {
-            displayPlaylistOptions(track.id);
+            displayPlaylistOptions();
           });
 
           var triggerElement = document.getElementById("addToPlaylistBtn");
