@@ -21,10 +21,12 @@ describe("Explorify", () => {
 
   test("User logs in, enters playlist name, and clicks create and update playlist", async () => {
     // Enable the Profiler domain and start precise coverage collection
+    await client.send('Profiler.enable');
+    await client.send('Profiler.startPreciseCoverage', { callCount: false, detailed: true });
 
 
     const playlistName = "wowowowo";
-    const accessToken = "BQDnt9Ea2wmXJ2DuVcmYQ5TMprjLHSVLFQ8ImS9ifpLgWYYwXtzLe__m7qv-7Jst6YU6q0n-i8jHKgOarstTTWC5naL8R-EZbvLJvqEM7EXi4WA88rhHyKgDjdBPI2QjY8yrAuxC3HLB4vc0JVsfSyALSOZhlaQJ6kFo0Tl_oOAoqMO93fhvogqvIprMOg4cGEOsaVAjoRz12Zcwn3tTunKeis-JYAOQOohLlGDPZf3PUD4JCDr1JhoiuvkcI4H02KSPXreACE5v2nmvsdFRsxqltAY3R9jbHODlKWI_Yn0&refresh_token=AQAw4MYLtTzWce3Zz9iyxE2bHd6SrxhetZoEJ5F6xBow6gmSczHQ35ssOpXvCgpy7jUcaPdMxFWG-KOYlcFhI1aHy44pe7jSqCGJo-yABx_Znle4z3c384ICESsT5lbRoAo" //ned in step 1
+    const accessToken = "BQDtyOycnBaCRdrXPeZZj2uQlajtwn5HBLN_1tRlq2DOPMVcAdiUv5KtvFvmC53D6PT3DsTy-RUVlim72_Y1x20aRS36bj7V03RdGm_wyP9NpPZoK_9C6clXuciEurQ-POq1tu1mpkrLWfAaF0Gtk3K5d3y_t12R2Co7Lfgf7YW-XqU8d5L1knXLoJu09jfewYDuKnjgMNioYrJSj6z-UB-zONP3V06sSDTmdXnZF-tR6YxpRUtJRGJmSflU5gZKQ4M-Mdfiesv7pyD_Dn8pwpt4--DGyXLtxBkJmijdRfQ"; //ned in step 1
 
     // Navigate to the application with the access token in the URL
     await page.goto(`http://localhost:8888/#access_token=${accessToken}`);
@@ -83,7 +85,7 @@ describe("Explorify", () => {
     } catch (error) {
       console.log('Error retrieving playlists:', error);
     }
-    
+
     // Delete the playlist if it exists
     if (playlistId) {
       const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/followers`, {
@@ -100,9 +102,37 @@ describe("Explorify", () => {
         throw new Error(`Failed to delete playlist with ID ${playlistName}`);
       }
       await page.waitForTimeout(10000);
+      await page.goto(`http://localhost:8888/#access_token=${accessToken}`);
+      await page.waitForTimeout(10000);
     }
 
+    // Stop the coverage collection and disable the Profiler domain
+    const { result } = await client.send('Profiler.takePreciseCoverage');
+    await client.send('Profiler.stopPreciseCoverage');
+    await client.send('Profiler.disable');
+
+    // Process the coverage data
+    const coverageSummary = result.map(({ url, functions }) => {
+      const totalBytes = functions.reduce((sum, { ranges }) => {
+        return sum + ranges.reduce((innerSum, range) => innerSum + range.end - range.start, 0);
+      }, 0);
+
+      const usedBytes = functions
+        .filter(({ functionName }) => functionName !== '')
+        .reduce((sum, { ranges }) => {
+          return sum + ranges.reduce((innerSum, range) => innerSum + range.end - range.start, 0);
+        }, 0);
+
+      return {
+        url,
+        totalBytes,
+        usedBytes,
+        coverage: (usedBytes / totalBytes) * 100,
+      };
+    });
+    console.log('Coverage summary:', coverageSummary);
 
 
-  }, 40000);
-});
+
+    }, 40000);
+  });
