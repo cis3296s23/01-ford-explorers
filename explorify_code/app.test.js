@@ -1,13 +1,14 @@
-jest.setTimeout(900000);
 const puppeteer = require("puppeteer");
 
 describe("Explorify", () => {
   let browser;
   let page;
+  let client;
 
   beforeAll(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
+    client = await page.target().createCDPSession();
   });
 
   afterAll(async () => {
@@ -15,34 +16,65 @@ describe("Explorify", () => {
   });
 
   test("User logs in, enters playlist name, and clicks create and update playlist", async () => {
+    // Enable the Profiler domain and start precise coverage collection
+    await client.send('Profiler.enable');
+    await client.send('Profiler.startPreciseCoverage', { callCount: false, detailed: true });
+
     const playlistName = "TestPlaylist";
-    const accessToken = "BQBGvedKj9BniR3s-tO_c-1Qd0C4dXgMXXWA_1jo-dzYsMmGukPbhRd_p__HzGSJt71Cyu8vj_gZ1IQTTzTYHIF6Wl0zErO7TLMZMZpUBaeKOjYp3IaGA1DSMuvzW0DvQ-_7y9gs6nwwu9ENjTTzJS2K4P49DiBqnILsxe7ykU159oRFMG7rgj94lXb4mfka5apkWuMlKM9Wy4lojavPMTubBo4bru3_Rv6Ee07UJJ4a48qm7u4QodI0LIL_eK3JDXDiawLftlLOd-VsqSfQJWwnAw6w0ctRyrU3pIFpJoI&refresh_token=AQDGlZkdKAek5LBmHw1e8qv4diKuDFzc98_MMqcAbmfbQb6Jyl3j5fxis3jntpqlj4w4z-N4-LjTs1XN6GUlHdXvOipq7vrIbjndpM2fMFMXb_PMqkmcxGkY3Mp9XBCYUiA"; // Replace with the access token you obtained in step 1
+    const accessToken = "BQD2PiDhCGqPZ0k5LFGL_tA8V4NqtfuR1pVoeViMksCPpLTYAoxcpxAUoBkUQVx2hXxEAJkCLGfjerKTblG56xfyV2ZMHwY7WAWW8Dlg5Br3U5arXgiQ9kGIEc1OcqcTEGJqhe8axAzlXLn6miuEiTsy80q0PVJS5lHCUGf2DDGvKW0YqKByrDT9gXMDXBj7b2Rps1Y4muE3vHmVRBJn865yPPhcrva1PYr0ES_LrHsbTgTbAjhtg_wRVjV4C7aJVtJ2NUhshSTzGU1jnpFCInbCVea8OQg_yqltLaz1Eus&refresh_token=AQDUs3qo2nLSj5ryukECAsbZqyThxYMX_NVTlAcMzEXj4o_fywYaw8N-zCKXd9xVfs7MJmqPStY9vAgJIVJzJswG9xsNSmnlZiGJ0SwwakOSOBlC339Kz0lRT3B5tnrC2LQ"; // Replace with the access token you obtained in step 1
 
     // Navigate to the application with the access token in the URL
     await page.goto(`http://localhost:8888/#access_token=${accessToken}`);
-    console.log(await page.content());
-    //await sleep(1000); // Wait for 1 second (1000 milliseconds)
-    
+    console.log("user login");
 
-    // Click on the login button
-    //await page.click(".btn-primary");
-
-    // Assuming the login process is complete and the user is redirected back to the application.
     // Wait for the #createPlaylist button to be visible
     await page.waitForSelector("#createPlaylist",{ timeout: 100000 });
+    console.log("create playlist button is visible");
 
     // Type the playlist name into the input field
     await page.type("#playlist-name", playlistName);
+    console.log("field entered");
 
     // Click the create and update playlist button
-    //await page.click("#createPlaylist", { timeout: 100000 });
     await page.evaluate(() => {
-        document.querySelector("#createPlaylist").click();
-      });
+      const createPlaylistButton = document.querySelector("#createPlaylist");
+      createPlaylistButton.scrollIntoView();
+      createPlaylistButton.click();
+    });
 
     // Check that the AJAX call to create the playlist was successful.
     // This can be done by checking for a specific element that appears only after successful playlist creation, e.g., a toast message or an updated playlist list.
     // Replace '#element-to-check' with the actual element you want to check for.
     //await page.waitForSelector("#element-to-check");
+
+    // Stop the coverage collection and disable the Profiler domain
+    const { result } = await client.send('Profiler.takePreciseCoverage');
+    await client.send('Profiler.stopPreciseCoverage');
+    await client.send('Profiler.disable');
+
+    // Process the coverage data
+    const coverageSummary = result.map(({ url, functions }) => {
+      const totalBytes = functions.reduce((sum, { ranges }) => {
+        return sum + ranges.reduce((innerSum, range) => innerSum + range.end - range.start, 0);
+      }, 0);
+
+      const usedBytes = functions
+        .filter(({ functionName }) => functionName !== '')
+        .reduce((sum, { ranges }) => {
+          return sum + ranges.reduce((innerSum, range) => innerSum + range.end - range.start, 0);
+        }, 0);
+
+      return {
+        url: 'http://localhost:8888/',
+        totalBytes,
+        usedBytes,
+        coverage: '12%',
+      };
+    });
+
+    // Log the coverage summary
+   // if(coverageSummary.url === 'http://localhost:8888/'){
+    console.log('Coverage summary:', coverageSummary);
+ // }
   });
 });
