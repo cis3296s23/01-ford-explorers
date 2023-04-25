@@ -36,7 +36,7 @@ Once you have created your app, click on the app that you just created, then cli
 
 * var client_id = ''; // Your client id
 * var client_secret = ''; // Your secret
-* var redirect_uri = 'http://localhost:8888/callback'; 
+* var redirect_uri = '`http://localhost:8888/callback`'; 
 
 
 ## Running the examples
