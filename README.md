@@ -1,12 +1,14 @@
-# Spotify Accounts Authentication Examples
+# Explorify
 
-This project contains basic demos showing the different OAuth 2.0 flows for [authenticating against the Spotify Web API](https://developer.spotify.com/web-api/authorization-guide/).
+Explorify is a web application that allows users to explore new music and manage their Spotify playlists. It leverages the Spotify API to fetch user's recently played tracks, manage playlists, and obtain song recommendations based on a selected seed track. The application provides a user-friendly interface to add, remove, and modify playlists and their content.
 
-These examples cover:
+## Prerequisites
+To run this project, you need to have the following installed:
 
-* Authorization Code flow
-* Client Credentials flow
-* Implicit Grant flow
+1. Node.js
+2. npm (Node.js package manager)
+
+Additionally, you need to have a Spotify Developer account and create a new Spotify App to obtain the necessary credentials: client_id, client_secret, and redirect_uri.
 
 ## Installation
 
@@ -43,4 +45,15 @@ In order to run the different examples, open the folder with the name of the flo
     $ cd explorify_code
     $ node app.js
 
-Then, open `http://localhost:8888` in a browser.
+Then, open http://localhost:8888 in a browser.
+
+## Usage
+
+1. Open the application in your browser at http://localhost:8888.
+2. Log in with your Spotify account.
+3. Explorify will display your recently played artists and your current playlists.
+4. Use the provided controls to manage your playlists, add or remove songs, and create new playlists.
+5. Click on the "Load Suggestions" button to get song recommendations based on a selected track.
+6. Add the recommended songs to your existing playlists or create a new playlist for them.
+
+Enjoy exploring new music and managing your Spotify playlists with Explorify!
