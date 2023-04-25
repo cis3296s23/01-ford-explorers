@@ -1,4 +1,4 @@
-# Explorify
+# Explorify - A Better Spotify Experience
 
 Explorify is a web application that allows users to explore new music and manage their Spotify playlists. It leverages the Spotify API to fetch user's recently played tracks, manage playlists, and obtain song recommendations based on a selected seed track. The application provides a user-friendly interface to add, remove, and modify playlists and their content.
 
